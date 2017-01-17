@@ -1,8 +1,7 @@
 ## Pylon
 
-`Pylon` is a minimal client library for Cloudant, written in Python. It isn't a replacement for
-Cloudant's fine official library, but intended as a demonstration of some base line principles 
-I consider good practice for client libraries wrapping a complex API.
+`Pylon` is a minimal client library for [Cloudant](https://www.cloudant.com), written in Python. It isn't a replacement for
+Cloudant's fine official [library](https://github.com/cloudant/python-cloudant), but intended as a demonstration of some base line principles I consider good practice for client libraries wrapping a complex API.
 
 * As thin as possible level of abstraction
 * Knowledge of underlying API required
