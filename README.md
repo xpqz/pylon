@@ -16,7 +16,7 @@ I consider good practice for client libraries wrapping a complex API.
 
     virtualenv --no-site-packages env
     . env/bin/activate
-    pip install -r requirements.txt```
+    pip install -r requirements.txt
 
 ### To use
 
