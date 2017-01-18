@@ -1,6 +1,6 @@
 ## Pylon
 
-[![Build Status](https://travis-ci.org/xpqz/pylon.svg?branch=master)](https://travis-ci.org/xpqz/pylon)
+[![Build Status](https://travis-ci.org/xpqz/pylon.svg?branch=master)](https://travis-ci.org/xpqz/pylon) [![codecov.io](http://codecov.io/github/xpqz/pylon/coverage.svg?branch=master)](http://codecov.io/github/xpqz/pylon/coverage.svg?branch=master)
 
 `Pylon` is a minimal client library for [Cloudant](https://www.cloudant.com), written in [Python](https://www.python.org/). It isn't a replacement for Cloudant's fine official [library](https://github.com/cloudant/python-cloudant), but intended as a demonstration of some base line principles I consider good practice for client libraries wrapping a complex API.
 
