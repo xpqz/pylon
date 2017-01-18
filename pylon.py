@@ -26,8 +26,6 @@ class Cloudant:
 
     def request(self, method, urlstr, params={}, headers={}, json={}, throw=True):
         """
-        r = cloudant.request(method, urlstr, params, headers, json, throw=True)
-
         HTTP request using the authenticated session object. `throw=True` raises exceptions
         on status >= 400
         """
@@ -40,8 +38,6 @@ class Cloudant:
 
     def read_doc(self, database, docid, **kwargs):
         """
-        result = cloudant.read_doc(dbname, docid, **kwargs) 
- 
         Fetch a document by `id`.
 
         [API reference](http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid)
@@ -50,8 +46,6 @@ class Cloudant:
 
     def bulk_docs(self, database, data=[], **kwargs):
         """
-        result = cloudant.bulk_docs(dbname, data, **kwargs)
-
         Raw _bulk_docs.
 
         This is a function primarily intended for internal use, but can
@@ -66,8 +60,6 @@ class Cloudant:
 
     def create_doc(self, database, data={}):
         """
-        result = cloudant.create_doc(dbname, data)
-
         Create one or more new documents. If `data` is a dict, this is considered to be the body
         of a single document. If `data` is a list of dicts, these are considered to be a document set.
 
@@ -84,8 +76,6 @@ class Cloudant:
 
     def update_doc(self, database, docid, revid, body={}):
         """
-        result = cloudant.update_doc(dbname, docid, revid, body)
-
         Update an existing document, creating a new revision.
 
         Implemented via the _bulk_docs endpoint.
@@ -97,8 +87,6 @@ class Cloudant:
 
     def delete_doc(self, database, docid, revid):
         """
-        result = cloudant.delete_doc(dbname, docid, revid)
-
         Delete a document revision. Implemented via the _bulk_docs endpoint.
 
         [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html?#post--db-_bulk_docs)
@@ -107,8 +95,6 @@ class Cloudant:
 
     def view_query(self, database, ddoc, viewname, **kwargs):
         """
-        result = cloudant.view_query(dbname, ddoc, viewname, **api_params)
-
         Query a secondary index.
 
         ### Example: query the view for a known key subset
@@ -136,8 +122,6 @@ class Cloudant:
 
     def all_docs(self, database, **kwargs):
         """
-        result = cloudant.all_docs(dbname, **api_params)
-
         Query the primary index.
 
         [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs)
@@ -155,8 +139,6 @@ class Cloudant:
 
     def create_database(self, database):
         """
-        (result, created) = cloudant.create_database(dbname)
-
         Create a new database on the remote end called `dbname`. Returns the response body
         and a boolean which is true if a database was created, false if it already existed.
 
@@ -174,8 +156,6 @@ class Cloudant:
 
     def list_databases(self):
         """
-        result = cloudant.list_databases()
-
         Return a list of all databases under the authenticated user.
 
         [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs)
@@ -184,8 +164,6 @@ class Cloudant:
 
     def delete_database(self, database):
         """
-        result = cloudant.delete_database(dbname)
-
         Delete the named database.
 
         [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html?#delete--db)
@@ -194,8 +172,6 @@ class Cloudant:
 
     def database_info(self, database):
         """
-        info = cloudant.database_info(dbname)
-
         Return the meta data about the `dbname` database.
 
         [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db)
