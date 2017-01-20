@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Pylon API &#8212; Pylon 0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="A Python library for Cloudant" href="intro.html" /> 
+  </head>
+  <body role="document">
+      <div class="header" role="banner"><h1 class="heading"><a href="index.html">
+          <span>Pylon 0.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Pylon API</span></h2>
+      </div>
+      <div class="topnav" role="navigation" aria-label="top navigation">
+      
+        <p>
+        «&#160;&#160;<a href="intro.html">A Python library for Cloudant</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="module-pylon">
+<span id="pylon-api"></span><h1>Pylon API<a class="headerlink" href="#module-pylon" title="Permalink to this headline">¶</a></h1>
+<p>A minimal client library for Cloudant</p>
+<p>Author: Stefan Kruger, IBM Cloudant</p>
+<dl class="class">
+<dt id="pylon.Cloudant">
+<em class="property">class </em><code class="descclassname">pylon.</code><code class="descname">Cloudant</code><span class="sig-paren">(</span><em>url</em>, <em>username</em>, <em>password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Cloudant class represents an authenticated connection to a remote CouchDB/Cloudant instance.</p>
+<dl class="method">
+<dt id="pylon.Cloudant.all_docs">
+<code class="descname">all_docs</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.all_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.all_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the primary index.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
+<span class="go">    &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
+<span class="go">    &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;</span>
+<span class="go">    ])</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.bulk_docs">
+<code class="descname">bulk_docs</code><span class="sig-paren">(</span><em>database</em>, <em>data=[]</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.bulk_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.bulk_docs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raw _bulk_docs.</p>
+<p>This is a function primarily intended for internal use, but can
+be used directly to create, update or delete documents in bulk,
+so as to save on the HTTP overhead.</p>
+<p>Note that many other methods are implemented in terms of <cite>bulk_docs</cite>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">bulk_docs</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;alice&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;bob&#39;</span><span class="p">}])</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.create_database">
+<code class="descname">create_database</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.create_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.create_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new database on the remote end called <cite>database</cite>. Returns the response body
+and a boolean which is true if a database was created, false if it already existed.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">created</span><span class="p">)</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put&#8211;db</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.create_doc">
+<code class="descname">create_doc</code><span class="sig-paren">(</span><em>database</em>, <em>data={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.create_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.create_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create one or more new documents. If <cite>data</cite> is a dict, this is considered to be the body
+of a single document. If <cite>data</cite> is a list of dicts, these are considered to be a document set.</p>
+<p>Note that this is implemented via the <cite>_bulk_docs</cite> endpoint, rather 
+than a <cite>POST</cite> to <cite>/{database}</cite>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">create_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;alice&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.database_info">
+<code class="descname">database_info</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.database_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.database_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the metadata about <cite>database</cite>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">database_info</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get&#8211;db</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.delete_database">
+<code class="descname">delete_database</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.delete_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.delete_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete <cite>database</cite>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">delete_database</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete&#8211;db</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.delete_doc">
+<code class="descname">delete_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>revid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.delete_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.delete_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delete a document revision. Implemented via the _bulk_docs endpoint.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">delete_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
+<span class="go">        &#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.list_databases">
+<code class="descname">list_databases</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.list_databases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.list_databases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of all databases under the authenticated user.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">list_databases</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs">http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.read_doc">
+<code class="descname">read_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.read_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.read_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fetch a document from the primary index by <cite>docid</cite></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">read_doc</span><span class="p">(</span><span class="s1">&#39;animaldb&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
+<span class="go">        rev=&#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid">http://docs.couchdb.org/en/1.6.1/api/document/common.html#get&#8211;db-docid</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.request">
+<code class="descname">request</code><span class="sig-paren">(</span><em>method</em>, <em>urlstr</em>, <em>params={}</em>, <em>headers={}</em>, <em>json={}</em>, <em>throw=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>HTTP request using the authenticated session object. <cite>throw=True</cite> raises exceptions
+on status &gt;= 400</p>
+<p>This can be used to target API endpoints not yet implemented by Pylon:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">remote</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;/_changes&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.update_doc">
+<code class="descname">update_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>revid</em>, <em>body={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.update_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.update_doc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update an existing document, creating a new revision.</p>
+<p>Implemented via the _bulk_docs endpoint.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">update_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
+<span class="go">        &#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;, {&#39;name&#39;:&#39;alice&#39;, &#39;phone&#39;:&#39;07865432236&#39;})</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.view_query">
+<code class="descname">view_query</code><span class="sig-paren">(</span><em>database</em>, <em>ddoc</em>, <em>viewname</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.view_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.view_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query a secondary index.</p>
+<dl class="docutils">
+<dt>Example: </dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cloudant</span><span class="o">.</span><span class="n">view_query</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;my_ddoc&quot;</span><span class="p">,</span> <span class="s2">&quot;my_view&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd>
+<dt>Returns:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span>
+<span class="go">  &quot;rows&quot;: [</span>
+<span class="go">    {&quot;key&quot; =&gt; &quot;alice&quot;, &quot;id&quot; =&gt; &quot;591c02fa8b8ff14dd4c0553670cc059a&quot;, &quot;value&quot; =&gt; 1},</span>
+<span class="go">    {&quot;key&quot; =&gt; &quot;bob&quot;, &quot;id&quot; =&gt; &quot;591c02fa8b8ff14dd4c0553670cc13c1&quot;, &quot;value&quot; =&gt; 1}</span>
+<span class="go">  ],</span>
+<span class="go">  &quot;offset&quot;: 0,</span>
+<span class="go">  &quot;total_rows&quot;: 7 </span>
+<span class="go">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>See <a class="reference external" href="https://docs.cloudant.com/using_views.html">https://docs.cloudant.com/using_views.html</a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="pylon.endpoint">
+<code class="descclassname">pylon.</code><code class="descname">endpoint</code><span class="sig-paren">(</span><em>url</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#endpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.endpoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylon.path">
+<code class="descclassname">pylon.</code><code class="descname">path</code><span class="sig-paren">(</span><em>dbname</em>, <em>pathstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+      </div>
+      <div class="bottomnav" role="navigation" aria-label="bottom navigation">
+      
+        <p>
+        «&#160;&#160;<a href="intro.html">A Python library for Cloudant</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        </p>
+
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Stefan Kruger.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.
+    </div>
+  </body>
+</html>
