@@ -1,7 +1,0 @@
-#!/bin/bash
-
-export COUCH_USER='username'
-export COUCH_PASSWORD='password'
-export COUCH_HOST_URL='https://skruger.cloudant.com'
-
-$@
