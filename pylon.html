@@ -58,9 +58,22 @@
 <code class="descname">all_docs</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.all_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.all_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query the primary index.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
-<span class="go">    &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
-<span class="go">    &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;</span>
-<span class="go">    ])</span>
+<span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
+<span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;])</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.all_docs_streamed">
+<code class="descname">all_docs_streamed</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.all_docs_streamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.all_docs_streamed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the primary index, streaming the results</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs_streamed</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
+<span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
+<span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;</span>
+<span class="go">        ]):</span>
+<span class="go">        print doc</span>
 </pre></div>
 </div>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs</a></p>
@@ -79,6 +92,11 @@ so as to save on the HTTP overhead.</p>
 </div>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
 </dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.changes_streamed">
+<code class="descname">changes_streamed</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.changes_streamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.changes_streamed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="pylon.Cloudant.create_database">
@@ -158,13 +176,18 @@ than a <cite>POST</cite> to <cite>/{database}</cite>.</p>
 
 <dl class="method">
 <dt id="pylon.Cloudant.request">
-<code class="descname">request</code><span class="sig-paren">(</span><em>method</em>, <em>urlstr</em>, <em>params={}</em>, <em>headers={}</em>, <em>json={}</em>, <em>throw=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.request" title="Permalink to this definition">¶</a></dt>
-<dd><p>HTTP request using the authenticated session object. <cite>throw=True</cite> raises exceptions
-on status &gt;= 400</p>
+<code class="descname">request</code><span class="sig-paren">(</span><em>method</em>, <em>urlstr</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>HTTP request using the authenticated session object.</p>
 <p>This can be used to target API endpoints not yet implemented by Pylon:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="n">remote</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;/_changes&#39;</span><span class="p">)))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.request_streamed">
+<code class="descname">request_streamed</code><span class="sig-paren">(</span><em>method</em>, <em>urlstr</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.request_streamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.request_streamed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator HTTP request using the authenticated session object.</p>
 </dd></dl>
 
 <dl class="method">
@@ -210,6 +233,11 @@ on status &gt;= 400</p>
 <dl class="function">
 <dt id="pylon.endpoint">
 <code class="descclassname">pylon.</code><code class="descname">endpoint</code><span class="sig-paren">(</span><em>url</em>, <em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#endpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.endpoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="pylon.parse_line">
+<code class="descclassname">pylon.</code><code class="descname">parse_line</code><span class="sig-paren">(</span><em>regex</em>, <em>line</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#parse_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.parse_line" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
