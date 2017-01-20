@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
+import requests
 import os
 import uuid
 
@@ -25,6 +26,16 @@ class TestBasics(unittest.TestCase):
     def test_createdoc(self):
         result = self.cdt.create_doc(self.database, data={'name':'adam'})
         self.assertTrue(result['ok'])
+
+    def test_createdb(self):
+        database = 'pylon-'+uuid.uuid4().hex
+        (result, created) = self.cdt.create_database(database)
+        self.assertTrue(created)
+        (result, created) = self.cdt.create_database(database)
+        self.assertFalse(created)
+        cdt = Cloudant(host, username, 'not-this-passw')
+        with self.assertRaises(requests.HTTPError):
+            cdt.create_database(database)
 
     def test_createdocs(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
@@ -58,6 +69,12 @@ class TestBasics(unittest.TestCase):
         docs = self.cdt.all_docs(self.database)
         self.assertTrue(len(docs['rows']) >= len(data))
 
+    def test_alldocs_get_streamed(self):
+        data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
+        written_docs = self.cdt.create_doc(self.database, data=data)
+        docs = [doc for doc in self.cdt.all_docs_streamed(self.database)]
+        self.assertTrue(len(docs) >= len(data))
+
     def test_alldocs_keys(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
         written_docs = self.cdt.create_doc(self.database, data=data)
@@ -67,15 +84,38 @@ class TestBasics(unittest.TestCase):
         docs = self.cdt.all_docs(self.database, keys=[doc['id'] for doc in written_docs])
         self.assertTrue(len(docs['rows']) == len(data))
 
+    def test_alldocs_keys_streamed(self):
+        data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
+        written_docs = self.cdt.create_doc(self.database, data=data)
+        data2 = [{'name':'david'}, {'name':'eric'}, {'name':'frances'}]
+        self.cdt.create_doc(self.database, data=data2)
+
+        docs = [d for d in self.cdt.all_docs_streamed(self.database, keys=[doc['id'] for doc in written_docs])]
+        self.assertTrue(len(docs) == len(data))
+
     def test_alldocs_key(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
         written_docs = self.cdt.create_doc(self.database, data=data)
         docs = self.cdt.all_docs(self.database, key=written_docs[0]['id'])
         self.assertTrue(len(docs['rows']) == 1)
 
+    def test_alldocs_key_streamed(self): # really..
+        data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
+        written_docs = self.cdt.create_doc(self.database, data=data)
+        docs = [d for d in self.cdt.all_docs_streamed(self.database, key=written_docs[0]['id'])]
+        self.assertTrue(len(docs) == 1)
+
     def test_listdbs(self):
         dbs = self.cdt.list_databases()
         self.assertTrue(self.database in dbs)
+
+    def test_streamed_changes(self): 
+        data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
+        written_docs = [row['id'] for row in self.cdt.create_doc(self.database, data=data)]
+        changes = {doc['id']:True for doc in self.cdt.changes_streamed(self.database) if 'id' in doc}
+
+        for docid in written_docs:
+            self.assertTrue(docid in changes)
 
 if __name__ == '__main__':
     unittest.main()

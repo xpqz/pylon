@@ -8,7 +8,9 @@ __docformat__ = 'reStructuredText'
 
 import requests
 import json
+import re
 from urlparse import urlsplit, urlunsplit
+from contextlib import closing
 
 def path(dbname, pathstr):
     return "/{0}{1}".format(dbname, pathstr)
@@ -19,6 +21,22 @@ def endpoint(url, path):
 
     return urlunsplit(new_url)
 
+def parse_line(regex, line):
+    decoded_line = line.rstrip().decode('utf-8')
+    m = re.match(regex, decoded_line)
+    if m:
+        value = m.group(1)
+        try:
+            data = json.loads(value) # Streaming _changes, normal lines in _all_docs
+        except ValueError, e:
+            try:
+                data = json.loads(value + '}') # Last proper line in _all_docs
+            except ValueError, e:
+                return ''
+        return data
+    else:
+        return ''
+
 class Cloudant:
     """
     The Cloudant class represents an authenticated connection to a remote CouchDB/Cloudant instance.
@@ -28,21 +46,34 @@ class Cloudant:
         self.session.auth = (username, password)
         self.url = urlsplit(url)
 
-    def request(self, method, urlstr, params={}, headers={}, json={}, throw=True):
+    #def request(self, method, urlstr, params={}, headers={}, json={}, throw=True):
+    def request(self, method, urlstr, **kwargs):
         """
-        HTTP request using the authenticated session object. `throw=True` raises exceptions
-        on status >= 400
+        HTTP request using the authenticated session object. 
 
         This can be used to target API endpoints not yet implemented by Pylon:
 
             >>> result = remote.request('GET', endpoint(remote.url, path('directory', '/_changes'))).json()
         """
-        r = self.session.request(method, urlstr, params=params, headers=headers, json=json)
-    
-        if throw:
-            r.raise_for_status()
+        r = self.session.request(method, urlstr, **kwargs)
+        r.raise_for_status()
 
         return r
+
+    def request_streamed(self, method, urlstr, **kwargs):
+        """
+        Generator HTTP request using the authenticated session object. 
+        """
+        valid = re.compile(r"^(\{.+\}?\}),?$") # Starts with '{', ends with either '}},' or '}'
+        with closing(self.request(method, urlstr, stream=True, **kwargs)) as r:
+            for line in r.iter_lines():
+                if line:
+                    parsed = parse_line(valid, line)
+                    if parsed != '':
+                        yield parsed
+
+    def changes_streamed(self, database):
+        return self.request_streamed('GET', endpoint(self.url, path(database, '/_changes')), params={'style':'all_docs', 'feed':'continuous', 'timeout':0})
 
     def read_doc(self, database, docid, **kwargs):
         """
@@ -146,9 +177,8 @@ class Cloudant:
         Query the primary index.
 
             >>> docs = remote.all_docs('directory', keys=[
-                '7a36cbc16e43e362e1ae68861aa06c0f',
-                '7a36cbc16e43e362e1ae68861aa06da1'
-                ])
+                    '7a36cbc16e43e362e1ae68861aa06c0f',
+                    '7a36cbc16e43e362e1ae68861aa06da1'])
 
         See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs
         """
@@ -161,7 +191,30 @@ class Cloudant:
         if key:    
             return self.request('POST', urlstr, json={'keys': [key]}, **kwargs).json()
 
-        return self.request('GET', urlstr, kwargs).json()
+        return self.request('GET', urlstr, **kwargs).json()
+
+    def all_docs_streamed(self, database, **kwargs):
+        """
+        Query the primary index, streaming the results
+
+            >>> for doc in remote.all_docs_streamed('directory', keys=[
+                    '7a36cbc16e43e362e1ae68861aa06c0f',
+                    '7a36cbc16e43e362e1ae68861aa06da1'
+                    ]):
+                    print doc
+
+        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs
+        """
+        urlstr = endpoint(self.url, path(database, "/_all_docs"))
+        keys = kwargs.pop('keys', None)
+        if keys:    
+            return self.request_streamed('POST', urlstr, json={'keys': keys}, **kwargs)
+
+        key = kwargs.pop('key', None)
+        if key:    
+            return self.request_streamed('POST', urlstr, json={'keys': [key]}, **kwargs)
+
+        return self.request_streamed('GET', urlstr, **kwargs)
 
     def create_database(self, database):
         """
@@ -172,15 +225,14 @@ class Cloudant:
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db
         """
-        r = self.request('PUT', endpoint(self.url, '/'+database), throw=False)
-
-        if r.status_code == requests.codes.ok:
+        try:
+            r = self.request('PUT', endpoint(self.url, '/'+database))
             return (r.json(), True)
-
-        if r.status_code == 412: # Database already present
-            return (r.json(), False)
-
-        r.raise_for_status
+        except requests.HTTPError, e:
+            if e.response.status_code == 412:
+                return ({'ok':True}, False) # Database already present
+            else:
+                raise e
 
     def list_databases(self):
         """
