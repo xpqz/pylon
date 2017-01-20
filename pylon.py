@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
+
 """A minimal client library for Cloudant
 
 Author: Stefan Kruger, IBM Cloudant
 """
+__docformat__ = 'reStructuredText'
+
 import requests
 import json
 from urlparse import urlsplit, urlunsplit
@@ -28,6 +32,10 @@ class Cloudant:
         """
         HTTP request using the authenticated session object. `throw=True` raises exceptions
         on status >= 400
+
+        This can be used to target API endpoints not yet implemented by Pylon:
+
+            >>> result = remote.request('GET', endpoint(remote.url, path('directory', '/_changes'))).json()
         """
         r = self.session.request(method, urlstr, params=params, headers=headers, json=json)
     
@@ -38,9 +46,12 @@ class Cloudant:
 
     def read_doc(self, database, docid, **kwargs):
         """
-        Fetch a document by `id`.
+        Fetch a document from the primary index by `docid` 
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid)
+            >>> doc = remote.read_doc('animaldb', '7a36cbc16e43e362e1ae68861aa06c0f', 
+                    rev='1-5a05c08a7a601c49c8bc344d77e23020')
+
+        See http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid
         """
         return self.request('GET', endpoint(self.url, path(database, '/'+docid)), params=kwargs).json()
 
@@ -54,7 +65,9 @@ class Cloudant:
 
         Note that many other methods are implemented in terms of `bulk_docs`.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html?#post--db-_bulk_docs)
+            >>> result = remote.bulk_docs('directory', [{'name':'alice'}, {'name':'bob'}])
+
+        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
         return self.request('POST', endpoint(self.url, path(database, '/_bulk_docs')), json={"docs": data}, params=kwargs).json()
 
@@ -64,9 +77,11 @@ class Cloudant:
         of a single document. If `data` is a list of dicts, these are considered to be a document set.
 
         Note that this is implemented via the `_bulk_docs` endpoint, rather 
-        than a `POST` to the `/{DB}`.
+        than a `POST` to `/{database}`.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html?#post--db-_bulk_docs)
+            >>> result = remote.create_doc('directory', {'name':'alice'})
+
+        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
         if isinstance(data, list):
             return self.bulk_docs(database, data)
@@ -80,7 +95,10 @@ class Cloudant:
 
         Implemented via the _bulk_docs endpoint.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html?#post--db-_bulk_docs)
+            >>> result = remote.update_doc('directory', '7a36cbc16e43e362e1ae68861aa06c0f', 
+                    '1-5a05c08a7a601c49c8bc344d77e23020', {'name':'alice', 'phone':'07865432236'})
+
+        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
         body.update({'_id':docid, '_rev':revid})
         return self.bulk_docs(database, [body])[0]
@@ -89,7 +107,10 @@ class Cloudant:
         """
         Delete a document revision. Implemented via the _bulk_docs endpoint.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html?#post--db-_bulk_docs)
+            >>> result = remote.delete_doc('directory', '7a36cbc16e43e362e1ae68861aa06c0f', 
+                    '1-5a05c08a7a601c49c8bc344d77e23020')
+
+        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
         return self.update_doc(database, docid, revid, {'_deleted':True})
 
@@ -97,20 +118,20 @@ class Cloudant:
         """
         Query a secondary index.
 
-        ### Example: query the view for a known key subset
-            result = cloudant.view_query(db, "my_ddoc", "my_view", keys=["alice", "bob"])
+        Example: 
+            >>> cloudant.view_query(db, "my_ddoc", "my_view", keys=["alice", "bob"])
 
-        ### Returns
-            {
+        Returns:
+            >>> {
               "rows": [
-                {"key" => "adam", "id" => "591c02fa8b8ff14dd4c0553670cc059a", "value" => 1},
-                {"key" => "billy", "id" => "591c02fa8b8ff14dd4c0553670cc13c1", "value" => 1}
+                {"key" => "alice", "id" => "591c02fa8b8ff14dd4c0553670cc059a", "value" => 1},
+                {"key" => "bob", "id" => "591c02fa8b8ff14dd4c0553670cc13c1", "value" => 1}
               ],
               "offset": 0,
               "total_rows": 7 
             )
 
-        [API reference](https://docs.cloudant.com/using_views.html)
+        See https://docs.cloudant.com/using_views.html
         """
         urlstr = endpoint(self.url, path(database, "/_design/{0}/_view/{1}".format(ddoc, viewname)))
 
@@ -124,7 +145,12 @@ class Cloudant:
         """
         Query the primary index.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs)
+            >>> docs = remote.all_docs('directory', keys=[
+                '7a36cbc16e43e362e1ae68861aa06c0f',
+                '7a36cbc16e43e362e1ae68861aa06da1'
+                ])
+
+        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs
         """
         urlstr = endpoint(self.url, path(database, "/_all_docs"))
         keys = kwargs.pop('keys', None)
@@ -139,10 +165,12 @@ class Cloudant:
 
     def create_database(self, database):
         """
-        Create a new database on the remote end called `dbname`. Returns the response body
+        Create a new database on the remote end called `database`. Returns the response body
         and a boolean which is true if a database was created, false if it already existed.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db)
+            >>> (result, created) = remote.create_database('directory')
+
+        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db
         """
         r = self.request('PUT', endpoint(self.url, '/'+database), throw=False)
 
@@ -158,22 +186,28 @@ class Cloudant:
         """
         Return a list of all databases under the authenticated user.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs)
+            >>> result = remote.list_databases()
+
+        See http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs
         """
         return self.request('GET', endpoint(self.url, '/_all_dbs')).json()
 
     def delete_database(self, database):
         """
-        Delete the named database.
+        Delete `database`.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html?#delete--db)
+            >>> result = remote.delete_database('directory')
+
+        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db
         """
         return self.request('DELETE', endpoint(self.url, '/'+database)).json()
 
     def database_info(self, database):
         """
-        Return the meta data about the `dbname` database.
+        Return the metadata about `database`.
 
-        [API reference](http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db)
+            >>> result = remote.database_info('directory')
+
+        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db
         """
         return self.request('GET', endpoint(self.url, '/'+database)).json()
