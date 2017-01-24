@@ -24,7 +24,7 @@ class TestBasics(unittest.TestCase):
         cls.cdt.delete_database(cls.database)
 
     def test_createdoc(self):
-        result = self.cdt.create_doc(self.database, data={'name':'adam'})
+        result = self.cdt.insert(self.database, data={'name':'adam'})
         self.assertTrue(result['ok'])
 
     def test_createdb(self):
@@ -39,13 +39,13 @@ class TestBasics(unittest.TestCase):
 
     def test_createdocs(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        result = self.cdt.create_doc(self.database, data=data)
+        result = self.cdt.insert(self.database, data=data)
         self.assertEquals(len(result), len(data))
 
     # Health warning: reading your writes NOT guaranteed to work for consistency reasons
     def test_readdoc(self): 
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
 
         for doc in written_docs:
             read_doc = self.cdt.read_doc(self.database, doc['id'])
@@ -53,55 +53,55 @@ class TestBasics(unittest.TestCase):
 
     # Health warning: reading your writes NOT guaranteed to work for consistency reasons
     def test_updatedoc(self):
-        doc = self.cdt.create_doc(self.database, data={'name':'bob'})
+        doc = self.cdt.insert(self.database, data={'name':'bob'})
         new_doc = self.cdt.update_doc(self.database, doc['id'], doc['rev'], body={'name':'bob', 'city':'folkstone'})
         self.assertTrue(new_doc['rev'].startswith('2-'))
 
     # Health warning: reading your writes NOT guaranteed to work for consistency reasons
     def test_deletedoc(self):
-        doc = self.cdt.create_doc(self.database, data={'name':'bob'})
+        doc = self.cdt.insert(self.database, data={'name':'bob'})
         result = self.cdt.delete_doc(self.database, doc['id'], doc['rev'])
         self.assertTrue(result['rev'].startswith('2-'))
 
     def test_alldocs_get(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
         docs = self.cdt.all_docs(self.database)
         self.assertTrue(len(docs['rows']) >= len(data))
 
     def test_alldocs_get_streamed(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
         docs = [doc for doc in self.cdt.all_docs_streamed(self.database)]
         self.assertTrue(len(docs) >= len(data))
 
     def test_alldocs_keys(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
         data2 = [{'name':'david'}, {'name':'eric'}, {'name':'frances'}]
-        self.cdt.create_doc(self.database, data=data2)
+        self.cdt.insert(self.database, data=data2)
 
         docs = self.cdt.all_docs(self.database, keys=[doc['id'] for doc in written_docs])
         self.assertTrue(len(docs['rows']) == len(data))
 
     def test_alldocs_keys_streamed(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
         data2 = [{'name':'david'}, {'name':'eric'}, {'name':'frances'}]
-        self.cdt.create_doc(self.database, data=data2)
+        self.cdt.insert(self.database, data=data2)
 
         docs = [d for d in self.cdt.all_docs_streamed(self.database, keys=[doc['id'] for doc in written_docs])]
         self.assertTrue(len(docs) == len(data))
 
     def test_alldocs_key(self):
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
         docs = self.cdt.all_docs(self.database, key=written_docs[0]['id'])
         self.assertTrue(len(docs['rows']) == 1)
 
     def test_alldocs_key_streamed(self): # really..
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = self.cdt.create_doc(self.database, data=data)
+        written_docs = self.cdt.insert(self.database, data=data)
         docs = [d for d in self.cdt.all_docs_streamed(self.database, key=written_docs[0]['id'])]
         self.assertTrue(len(docs) == 1)
 
@@ -111,7 +111,7 @@ class TestBasics(unittest.TestCase):
 
     def test_streamed_changes(self): 
         data = [{'name':'adam'}, {'name':'bob'}, {'name':'charlotte'}]
-        written_docs = [row['id'] for row in self.cdt.create_doc(self.database, data=data)]
+        written_docs = [row['id'] for row in self.cdt.insert(self.database, data=data)]
         changes = {doc['id']:True for doc in self.cdt.changes_streamed(self.database) if 'id' in doc}
 
         for docid in written_docs:

@@ -9,6 +9,8 @@ __docformat__ = 'reStructuredText'
 import requests
 import json
 import re
+import random
+from time import sleep
 from urlparse import urlsplit, urlunsplit
 from contextlib import closing
 
@@ -37,28 +39,29 @@ def parse_line(regex, line):
     else:
         return ''
 
-class Cloudant:
+class Cloudant(requests.Session):
     """
-    The Cloudant class represents an authenticated connection to a remote CouchDB/Cloudant instance.
+    The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.
     """
-    def __init__(self, url, username, password):
-        self.session = requests.Session()
-        self.session.auth = (username, password)
+    def __init__(self, url, username, password, **kwargs):
+        requests.Session.__init__(self, **kwargs)
+        self.auth = (username, password)
         self.url = urlsplit(url)
 
-    #def request(self, method, urlstr, params={}, headers={}, json={}, throw=True):
     def request(self, method, urlstr, **kwargs):
-        """
-        HTTP request using the authenticated session object. 
-
-        This can be used to target API endpoints not yet implemented by Pylon:
-
-            >>> result = remote.request('GET', endpoint(remote.url, path('directory', '/_changes'))).json()
-        """
-        r = self.session.request(method, urlstr, **kwargs)
-        r.raise_for_status()
-
-        return r
+        delay = 0.1
+        for i in xrange(5, 0, -1):
+            try:
+                r = super(Cloudant, self).request(method, urlstr, **kwargs)
+                r.raise_for_status()
+                return r
+            except requests.HTTPError, e:
+                if e.response.status_code == 429:
+                    delay = delay + random.randint(0, 9)/100.0
+                    sleep(delay)
+                    next
+                else:
+                    raise e
 
     def request_streamed(self, method, urlstr, **kwargs):
         """
@@ -102,7 +105,7 @@ class Cloudant:
         """
         return self.request('POST', endpoint(self.url, path(database, '/_bulk_docs')), json={"docs": data}, params=kwargs).json()
 
-    def create_doc(self, database, data={}):
+    def insert(self, database, data={}):
         """
         Create one or more new documents. If `data` is a dict, this is considered to be the body
         of a single document. If `data` is a list of dicts, these are considered to be a document set.
@@ -166,11 +169,13 @@ class Cloudant:
         """
         urlstr = endpoint(self.url, path(database, "/_design/{0}/_view/{1}".format(ddoc, viewname)))
 
+        method = 'GET'
         keys = kwargs.pop('keys', None)
-        if keys:    
-            return self.request('POST', urlstr, json={'keys': keys}, **kwargs).json()
+        if keys:
+            kwargs['json'] = {'keys':keys}
+            method = 'POST' 
 
-        return self.request('GET', urlstr, kwargs).json()
+        return self.request(method, urlstr, **kwargs).json()
 
     def all_docs(self, database, **kwargs):
         """
@@ -183,15 +188,18 @@ class Cloudant:
         See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs
         """
         urlstr = endpoint(self.url, path(database, "/_all_docs"))
+        method = 'GET'
         keys = kwargs.pop('keys', None)
         if keys:    
-            return self.request('POST', urlstr, json={'keys': keys}, **kwargs).json()
+            kwargs['json'] = {'keys':keys}
+            method = 'POST'
 
         key = kwargs.pop('key', None)
-        if key:    
-            return self.request('POST', urlstr, json={'keys': [key]}, **kwargs).json()
+        if key:
+            kwargs['json'] = {'keys':[key]}
+            method = 'POST'
 
-        return self.request('GET', urlstr, **kwargs).json()
+        return self.request(method, urlstr, **kwargs).json()
 
     def all_docs_streamed(self, database, **kwargs):
         """
@@ -227,6 +235,7 @@ class Cloudant:
         """
         try:
             r = self.request('PUT', endpoint(self.url, '/'+database))
+            r.raise_for_status()
             return (r.json(), True)
         except requests.HTTPError, e:
             if e.response.status_code == 412:
