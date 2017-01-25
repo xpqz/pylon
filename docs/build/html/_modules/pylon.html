@@ -54,6 +54,8 @@
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">urlparse</span> <span class="k">import</span> <span class="n">urlsplit</span><span class="p">,</span> <span class="n">urlunsplit</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">closing</span>
 
@@ -66,49 +68,55 @@
 
     <span class="k">return</span> <span class="n">urlunsplit</span><span class="p">(</span><span class="n">new_url</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="parse_line"><a class="viewcode-back" href="../pylon.html#pylon.parse_line">[docs]</a><span class="k">def</span> <span class="nf">parse_line</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
-    <span class="n">decoded_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">decoded_line</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c1"># Streaming _changes, normal lines in _all_docs</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span><span class="p">)</span> <span class="c1"># Last proper line in _all_docs</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">return</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">data</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span></div>
-
-<div class="viewcode-block" id="Cloudant"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant">[docs]</a><span class="k">class</span> <span class="nc">Cloudant</span><span class="p">:</span>
+<div class="viewcode-block" id="Cloudant"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant">[docs]</a><span class="k">class</span> <span class="nc">Cloudant</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The Cloudant class represents an authenticated connection to a remote CouchDB/Cloudant instance.</span>
+<span class="sd">    The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
-    <span class="c1">#def request(self, method, urlstr, params={}, headers={}, json={}, throw=True):</span>
 <div class="viewcode-block" id="Cloudant.request"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        HTTP request using the authenticated session object. </span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Cloudant</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">r</span>
+            <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">429</span><span class="p">:</span> <span class="c1"># Going too fast -- back off</span>
+                    <span class="n">delay</span> <span class="o">=</span> <span class="n">delay</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span><span class="o">/</span><span class="mf">100.0</span>
+                    <span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
+                    <span class="nb">next</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">e</span> <span class="c1"># A non-429 error</span>
 
-<span class="sd">        This can be used to target API endpoints not yet implemented by Pylon:</span>
-
-<span class="sd">            &gt;&gt;&gt; result = remote.request(&#39;GET&#39;, endpoint(remote.url, path(&#39;directory&#39;, &#39;/_changes&#39;))).json()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
-
-        <span class="k">return</span> <span class="n">r</span></div>
+        <span class="c1"># Max retries hit, surface the 429</span>
+        <span class="n">http_error_msg</span> <span class="o">=</span> <span class="s1">u&#39;</span><span class="si">%s</span><span class="s1"> Error: max retries limit hit for url: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="n">http_error_msg</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> </div>
 
 <div class="viewcode-block" id="Cloudant.request_streamed"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.request_streamed">[docs]</a>    <span class="k">def</span> <span class="nf">request_streamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generator HTTP request using the authenticated session object. </span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">parse_line</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+            <span class="n">decoded_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">decoded_line</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="c1"># Streaming _changes, normal lines in _all_docs</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="s1">&#39;}&#39;</span><span class="p">)</span> <span class="c1"># Last proper line in _all_docs</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">return</span> <span class="n">data</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+        
         <span class="n">valid</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">r&quot;^(\{.+\}?\}),?$&quot;</span><span class="p">)</span> <span class="c1"># Starts with &#39;{&#39;, ends with either &#39;}},&#39; or &#39;}&#39;</span>
         <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span> <span class="k">as</span> <span class="n">r</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">iter_lines</span><span class="p">():</span>
@@ -129,7 +137,7 @@
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">docid</span><span class="p">)),</span> <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">docid</span><span class="p">)),</span> <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cloudant.bulk_docs"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.bulk_docs">[docs]</a>    <span class="k">def</span> <span class="nf">bulk_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">[],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -145,17 +153,17 @@
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s1">&#39;/_bulk_docs&#39;</span><span class="p">)),</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;docs&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">},</span> <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s1">&#39;/_bulk_docs&#39;</span><span class="p">)),</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;docs&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">},</span> <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Cloudant.create_doc"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.create_doc">[docs]</a>    <span class="k">def</span> <span class="nf">create_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{}):</span>
+<div class="viewcode-block" id="Cloudant.insert"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{}):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create one or more new documents. If `data` is a dict, this is considered to be the body</span>
+<span class="sd">        Insert one or more new documents. If `data` is a dict, this is considered to be the body</span>
 <span class="sd">        of a single document. If `data` is a list of dicts, these are considered to be a document set.</span>
 
 <span class="sd">        Note that this is implemented via the `_bulk_docs` endpoint, rather </span>
 <span class="sd">        than a `POST` to `/{database}`.</span>
 
-<span class="sd">            &gt;&gt;&gt; result = remote.create_doc(&#39;directory&#39;, {&#39;name&#39;:&#39;alice&#39;})</span>
+<span class="sd">            &gt;&gt;&gt; result = remote.insert(&#39;directory&#39;, {&#39;name&#39;:&#39;alice&#39;})</span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -211,11 +219,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">urlstr</span> <span class="o">=</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s2">&quot;/_design/</span><span class="si">{0}</span><span class="s2">/_view/</span><span class="si">{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ddoc</span><span class="p">,</span> <span class="n">viewname</span><span class="p">)))</span>
 
+        <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>    
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="n">keys</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;keys&#39;</span><span class="p">:</span><span class="n">keys</span><span class="p">}</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span> 
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cloudant.all_docs"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.all_docs">[docs]</a>    <span class="k">def</span> <span class="nf">all_docs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -228,15 +238,18 @@
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">urlstr</span> <span class="o">=</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s2">&quot;/_all_docs&quot;</span><span class="p">))</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;GET&#39;</span>
         <span class="n">keys</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;keys&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">keys</span><span class="p">:</span>    
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="n">keys</span><span class="p">},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;keys&#39;</span><span class="p">:</span><span class="n">keys</span><span class="p">}</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span>
 
         <span class="n">key</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>    
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;keys&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">key</span><span class="p">]},</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;json&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;keys&#39;</span><span class="p">:[</span><span class="n">key</span><span class="p">]}</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;POST&#39;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cloudant.all_docs_streamed"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.all_docs_streamed">[docs]</a>    <span class="k">def</span> <span class="nf">all_docs_streamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -271,7 +284,8 @@
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;PUT&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">database</span><span class="p">))</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">database</span><span class="p">))</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
             <span class="k">return</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">412</span><span class="p">:</span>
@@ -287,7 +301,7 @@
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/_all_dbs&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/_all_dbs&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cloudant.delete_database"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.delete_database">[docs]</a>    <span class="k">def</span> <span class="nf">delete_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -297,7 +311,7 @@
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;DELETE&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">database</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">database</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cloudant.database_info"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.database_info">[docs]</a>    <span class="k">def</span> <span class="nf">database_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -307,7 +321,7 @@
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">database</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">database</span><span class="p">))</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div></div>
 </pre></div>
 
       </div>
