@@ -117,5 +117,13 @@ class TestBasics(unittest.TestCase):
         for docid in written_docs:
             self.assertTrue(docid in changes)
 
+    def test_429(self):
+        mock429 = Cloudant('http://mock429.eu-gb.mybluemix.net/', 'username', 'password')
+        try:
+            mock429.create_database('database')
+        except requests.HTTPError, e:
+            self.assertEqual(e.response.status_code, 429)
+            self.assertTrue('max retries limit' in str(e))
+
 if __name__ == '__main__':
     unittest.main()

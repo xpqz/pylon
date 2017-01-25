@@ -50,18 +50,23 @@ class Cloudant(requests.Session):
 
     def request(self, method, urlstr, **kwargs):
         delay = 0.1
+        r = None
         for i in xrange(5, 0, -1):
             try:
                 r = super(Cloudant, self).request(method, urlstr, **kwargs)
                 r.raise_for_status()
                 return r
             except requests.HTTPError, e:
-                if e.response.status_code == 429:
+                if e.response.status_code == 429: # Going too fast -- back off
                     delay = delay + random.randint(0, 9)/100.0
                     sleep(delay)
                     next
                 else:
-                    raise e
+                    raise e # A non-429 error
+
+        # Max retries hit, surface the 429
+        http_error_msg = u'%s Error: max retries limit hit for url: %s' % (r.status_code, urlstr)
+        raise requests.HTTPError(http_error_msg, response=r) 
 
     def request_streamed(self, method, urlstr, **kwargs):
         """
@@ -107,13 +112,13 @@ class Cloudant(requests.Session):
 
     def insert(self, database, data={}):
         """
-        Create one or more new documents. If `data` is a dict, this is considered to be the body
+        Insert one or more new documents. If `data` is a dict, this is considered to be the body
         of a single document. If `data` is a list of dicts, these are considered to be a document set.
 
         Note that this is implemented via the `_bulk_docs` endpoint, rather 
         than a `POST` to `/{database}`.
 
-            >>> result = remote.create_doc('directory', {'name':'alice'})
+            >>> result = remote.insert('directory', {'name':'alice'})
 
         See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
