@@ -23,22 +23,6 @@ def endpoint(url, path):
 
     return urlunsplit(new_url)
 
-def parse_line(regex, line):
-    decoded_line = line.rstrip().decode('utf-8')
-    m = re.match(regex, decoded_line)
-    if m:
-        value = m.group(1)
-        try:
-            data = json.loads(value) # Streaming _changes, normal lines in _all_docs
-        except ValueError, e:
-            try:
-                data = json.loads(value + '}') # Last proper line in _all_docs
-            except ValueError, e:
-                return ''
-        return data
-    else:
-        return ''
-
 class Cloudant(requests.Session):
     """
     The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.
@@ -72,6 +56,22 @@ class Cloudant(requests.Session):
         """
         Generator HTTP request using the authenticated session object. 
         """
+        def parse_line(regex, line):
+            decoded_line = line.rstrip().decode('utf-8')
+            m = re.match(regex, decoded_line)
+            if m:
+                value = m.group(1)
+                try:
+                    data = json.loads(value) # Streaming _changes, normal lines in _all_docs
+                except ValueError, e:
+                    try:
+                        data = json.loads(value + '}') # Last proper line in _all_docs
+                    except ValueError, e:
+                        return ''
+                return data
+            else:
+                return ''
+        
         valid = re.compile(r"^(\{.+\}?\}),?$") # Starts with '{', ends with either '}},' or '}'
         with closing(self.request(method, urlstr, stream=True, **kwargs)) as r:
             for line in r.iter_lines():
@@ -92,7 +92,7 @@ class Cloudant(requests.Session):
 
         See http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid
         """
-        return self.request('GET', endpoint(self.url, path(database, '/'+docid)), params=kwargs).json()
+        return self.get(endpoint(self.url, path(database, '/'+docid)), params=kwargs).json()
 
     def bulk_docs(self, database, data=[], **kwargs):
         """
@@ -108,7 +108,7 @@ class Cloudant(requests.Session):
 
         See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
-        return self.request('POST', endpoint(self.url, path(database, '/_bulk_docs')), json={"docs": data}, params=kwargs).json()
+        return self.post(endpoint(self.url, path(database, '/_bulk_docs')), json={"docs": data}, params=kwargs).json()
 
     def insert(self, database, data={}):
         """
@@ -239,7 +239,7 @@ class Cloudant(requests.Session):
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db
         """
         try:
-            r = self.request('PUT', endpoint(self.url, '/'+database))
+            r = self.put(endpoint(self.url, '/'+database))
             r.raise_for_status()
             return (r.json(), True)
         except requests.HTTPError, e:
@@ -256,7 +256,7 @@ class Cloudant(requests.Session):
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs
         """
-        return self.request('GET', endpoint(self.url, '/_all_dbs')).json()
+        return self.get(endpoint(self.url, '/_all_dbs')).json()
 
     def delete_database(self, database):
         """
@@ -266,7 +266,7 @@ class Cloudant(requests.Session):
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db
         """
-        return self.request('DELETE', endpoint(self.url, '/'+database)).json()
+        return self.delete(endpoint(self.url, '/'+database)).json()
 
     def database_info(self, database):
         """
@@ -276,4 +276,4 @@ class Cloudant(requests.Session):
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db
         """
-        return self.request('GET', endpoint(self.url, '/'+database)).json()
+        return self.get(endpoint(self.url, '/'+database)).json()
