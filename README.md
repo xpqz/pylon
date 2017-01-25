@@ -30,6 +30,6 @@ Check out the file `tests.py`.
     cdt = Cloudant('https://name.cloudant.com', username, password)
     cdt.create_database(database)
 
-    result = cdt.create_doc(database, {'name': 'bob'})
+    result = cdt.insert(database, {'name': 'bob'})
 
     data = cdt.all_docs(database)
