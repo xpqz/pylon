@@ -43,7 +43,7 @@ class Cloudant(requests.Session):
         accumulative delay. Each iteration adds a fixed amount (default 0.1s) plus 
         a little bit of noise (between 0 and 9 1/100th of a second) between retries.
 
-            >>> sess.retry_config(10, 0.5)
+            >>> remote.retry_config(10, 0.5)
         """
         self.max_retries = max_retries
         self.base_delay = base_delay
