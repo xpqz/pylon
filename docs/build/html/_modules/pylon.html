@@ -45,7 +45,8 @@
   <h1>Source code for pylon</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;A minimal client library for Cloudant</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A minimal client library for Cloudant/CouchDB</span>
 
 <span class="sd">Author: Stefan Kruger, IBM Cloudant</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -71,16 +72,41 @@
 <div class="viewcode-block" id="Cloudant"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant">[docs]</a><span class="k">class</span> <span class="nc">Cloudant</span><span class="p">(</span><span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.</span>
+
+<span class="sd">    It supports request retries on 429 responses from Cloudant. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">urlsplit</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<div class="viewcode-block" id="Cloudant.retry_config"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.retry_config">[docs]</a>    <span class="k">def</span> <span class="nf">retry_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">base_delay</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tune the retry parameters for 429 errors. The default is 5 retries with an</span>
+<span class="sd">        accumulative delay. Each iteration adds a fixed amount (default 0.1s) plus </span>
+<span class="sd">        a little bit of noise (between 0 and 9 1/100th of a second) between retries.</span>
+
+<span class="sd">            &gt;&gt;&gt; remote.retry_config(10, 0.5)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">=</span> <span class="n">max_retries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">=</span> <span class="n">base_delay</span></div>
 
 <div class="viewcode-block" id="Cloudant.request"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">delay</span> <span class="o">=</span> <span class="mf">0.1</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform an HTTP request, returning the repsonse. This overrides the method </span>
+<span class="sd">        from requests.Session.</span>
+
+<span class="sd">        Cloudant will return HTTP status &#39;429: Too Many Requests&#39; if the reserved</span>
+<span class="sd">        throughput capacity is exceeded. This method will retry a configurable </span>
+<span class="sd">        number of times if this happens.</span>
+
+<span class="sd">        See https://docs.cloudant.com/http.html#http-status-codes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">r</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Cloudant</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                 <span class="n">r</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
@@ -94,7 +120,7 @@
                     <span class="k">raise</span> <span class="n">e</span> <span class="c1"># A non-429 error</span>
 
         <span class="c1"># Max retries hit, surface the 429</span>
-        <span class="n">http_error_msg</span> <span class="o">=</span> <span class="s1">u&#39;</span><span class="si">%s</span><span class="s1"> Error: max retries limit hit for url: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">)</span>
+        <span class="n">http_error_msg</span> <span class="o">=</span> <span class="s1">u&#39;</span><span class="si">%s</span><span class="s1"> Error: max retries limit: </span><span class="si">%d</span><span class="s1"> hit for url: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">requests</span><span class="o">.</span><span class="n">HTTPError</span><span class="p">(</span><span class="n">http_error_msg</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">r</span><span class="p">)</span> </div>
 
 <div class="viewcode-block" id="Cloudant.request_streamed"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.request_streamed">[docs]</a>    <span class="k">def</span> <span class="nf">request_streamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
