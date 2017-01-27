@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-"""A minimal client library for Cloudant
+"""
+A minimal client library for Cloudant/CouchDB
 
 Author: Stefan Kruger, IBM Cloudant
 """
@@ -26,16 +27,41 @@ def endpoint(url, path):
 class Cloudant(requests.Session):
     """
     The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.
+
+    It supports request retries on 429 responses from Cloudant. 
     """
     def __init__(self, url, username, password, **kwargs):
         requests.Session.__init__(self, **kwargs)
         self.auth = (username, password)
         self.url = urlsplit(url)
+        self.max_retries = 5
+        self.base_delay = 0.1
+
+    def retry_config(self, max_retries=5, base_delay=0.1):
+        """
+        Tune the retry parameters for 429 errors. The default is 5 retries with an
+        accumulative delay. Each iteration adds a fixed amount (default 0.1s) plus 
+        a little bit of noise (between 0 and 9 1/100th of a second) between retries.
+
+            >>> sess.retry_config(10, 0.5)
+        """
+        self.max_retries = max_retries
+        self.base_delay = base_delay
 
     def request(self, method, urlstr, **kwargs):
-        delay = 0.1
+        """
+        Perform an HTTP request, returning the repsonse. This overrides the method 
+        from requests.Session.
+
+        Cloudant will return HTTP status '429: Too Many Requests' if the reserved
+        throughput capacity is exceeded. This method will retry a configurable 
+        number of times if this happens.
+
+        See https://docs.cloudant.com/http.html#http-status-codes
+        """
         r = None
-        for i in xrange(5, 0, -1):
+        delay = self.base_delay
+        for i in xrange(self.max_retries, 0, -1):
             try:
                 r = super(Cloudant, self).request(method, urlstr, **kwargs)
                 r.raise_for_status()
@@ -49,7 +75,7 @@ class Cloudant(requests.Session):
                     raise e # A non-429 error
 
         # Max retries hit, surface the 429
-        http_error_msg = u'%s Error: max retries limit hit for url: %s' % (r.status_code, urlstr)
+        http_error_msg = u'%s Error: max retries limit: %d hit for url: %s' % (r.status_code, self.max_retries, urlstr)
         raise requests.HTTPError(http_error_msg, response=r) 
 
     def request_streamed(self, method, urlstr, **kwargs):

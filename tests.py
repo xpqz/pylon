@@ -119,6 +119,7 @@ class TestBasics(unittest.TestCase):
 
     def test_429(self):
         mock429 = Cloudant('http://mock429.eu-gb.mybluemix.net/', 'username', 'password')
+        mock429.retry_config(10, 0.5)
         try:
             mock429.create_database('database')
         except requests.HTTPError, e:
