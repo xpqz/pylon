@@ -47,13 +47,14 @@
         
   <div class="section" id="module-pylon">
 <span id="pylon-api"></span><h1>Pylon API<a class="headerlink" href="#module-pylon" title="Permalink to this headline">¶</a></h1>
-<p>A minimal client library for Cloudant</p>
+<p>A minimal client library for Cloudant/CouchDB</p>
 <p>Author: Stefan Kruger, IBM Cloudant</p>
 <dl class="class">
 <dt id="pylon.Cloudant">
 <em class="property">class </em><code class="descclassname">pylon.</code><code class="descname">Cloudant</code><span class="sig-paren">(</span><em>url</em>, <em>username</em>, <em>password</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">requests.sessions.Session</span></code></p>
 <p>The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.</p>
+<p>It supports request retries on 429 responses from Cloudant.</p>
 <dl class="method">
 <dt id="pylon.Cloudant.all_docs">
 <code class="descname">all_docs</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.all_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.all_docs" title="Permalink to this definition">¶</a></dt>
@@ -425,7 +426,13 @@ necessary.</p>
 <dl class="method">
 <dt id="pylon.Cloudant.request">
 <code class="descname">request</code><span class="sig-paren">(</span><em>method</em>, <em>urlstr</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.request" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Perform an HTTP request, returning the repsonse. This overrides the method 
+from requests.Session.</p>
+<p>Cloudant will return HTTP status &#8216;429: Too Many Requests&#8217; if the reserved
+throughput capacity is exceeded. This method will retry a configurable 
+number of times if this happens.</p>
+<p>See <a class="reference external" href="https://docs.cloudant.com/http.html#http-status-codes">https://docs.cloudant.com/http.html#http-status-codes</a></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="pylon.Cloudant.request_streamed">
@@ -437,6 +444,17 @@ necessary.</p>
 <dt id="pylon.Cloudant.resolve_redirects">
 <code class="descname">resolve_redirects</code><span class="sig-paren">(</span><em>resp</em>, <em>req</em>, <em>stream=False</em>, <em>timeout=None</em>, <em>verify=True</em>, <em>cert=None</em>, <em>proxies=None</em>, <em>**adapter_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.resolve_redirects" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receives a Response. Returns a generator of Responses.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="pylon.Cloudant.retry_config">
+<code class="descname">retry_config</code><span class="sig-paren">(</span><em>max_retries=5</em>, <em>base_delay=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.retry_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.retry_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tune the retry parameters for 429 errors. The default is 5 retries with an
+accumulative delay. Each iteration adds a fixed amount (default 0.1s) plus 
+a little bit of noise (between 0 and 9 1/100th of a second) between retries.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span><span class="o">.</span><span class="n">retry_config</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="method">
