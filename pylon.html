@@ -47,8 +47,6 @@
         
   <div class="section" id="module-pylon">
 <span id="pylon-api"></span><h1>Pylon API<a class="headerlink" href="#module-pylon" title="Permalink to this headline">¶</a></h1>
-<p>A minimal client library for Cloudant/CouchDB</p>
-<p>Author: Stefan Kruger, IBM Cloudant</p>
 <dl class="class">
 <dt id="pylon.Cloudant">
 <em class="property">class </em><code class="descclassname">pylon.</code><code class="descname">Cloudant</code><span class="sig-paren">(</span><em>url</em>, <em>username</em>, <em>password</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant" title="Permalink to this definition">¶</a></dt>
@@ -59,25 +57,53 @@
 <dt id="pylon.Cloudant.all_docs">
 <code class="descname">all_docs</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.all_docs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.all_docs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query the primary index.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">docs</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
 <span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
 <span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;])</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pylon.Cloudant.all_docs_streamed">
 <code class="descname">all_docs_streamed</code><span class="sig-paren">(</span><em>database</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.all_docs_streamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.all_docs_streamed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query the primary index, streaming the results</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs_streamed</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
+<dd><p>Query the primary index, streaming the results. Generator of dicts.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">generator</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">remote</span><span class="o">.</span><span class="n">all_docs_streamed</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span>
 <span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
 <span class="go">        &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;</span>
 <span class="go">        ]):</span>
 <span class="go">        print doc</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#db-all-docs</a></p>
 </dd></dl>
 
@@ -88,6 +114,21 @@
 <p>This is a function primarily intended for internal use, but can
 be used directly to create, update or delete documents in bulk,
 so as to save on the HTTP overhead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</li>
+<li><strong>data</strong> &#8211; the list of documents to send</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
 <p>Note that many other methods are implemented in terms of <cite>bulk_docs</cite>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">bulk_docs</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;alice&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;bob&#39;</span><span class="p">}])</span>
 </pre></div>
@@ -98,7 +139,25 @@ so as to save on the HTTP overhead.</p>
 <dl class="method">
 <dt id="pylon.Cloudant.changes_streamed">
 <code class="descname">changes_streamed</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.changes_streamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.changes_streamed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Convenience method for streaming a changes feed. Generator of dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylon</span> <span class="k">import</span> <span class="n">Cloudant</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span> <span class="o">=</span> <span class="n">Cloudant</span><span class="p">(</span><span class="s1">&#39;https://user.cloudant.com&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">changes</span> <span class="o">=</span> <span class="p">{</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span><span class="kc">True</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">remote</span><span class="o">.</span><span class="n">changes_streamed</span><span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="pylon.Cloudant.close">
@@ -111,19 +170,47 @@ so as to save on the HTTP overhead.</p>
 <code class="descname">create_database</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.create_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.create_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new database on the remote end called <cite>database</cite>. Returns the response body
 and a boolean which is true if a database was created, false if it already existed.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">created</span><span class="p">)</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">created</span><span class="p">)</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">create_database</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put&#8211;db</a></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="pylon.Cloudant.database_info">
 <code class="descname">database_info</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.database_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.database_info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the metadata about <cite>database</cite>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">database_info</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+<dd><p>Return the metadata about a database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">database_info</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get&#8211;db</a></p>
 </dd></dl>
 
@@ -151,10 +238,24 @@ and a boolean which is true if a database was created, false if it already exist
 <dl class="method">
 <dt id="pylon.Cloudant.delete_database">
 <code class="descname">delete_database</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.delete_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.delete_database" title="Permalink to this definition">¶</a></dt>
-<dd><p>Delete <cite>database</cite>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">delete_database</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
+<dd><p>Delete a database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>database</strong> &#8211; the name of the database we&#8217;re deleting.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">delete_database</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete&#8211;db</a></p>
 </dd></dl>
 
@@ -162,10 +263,30 @@ and a boolean which is true if a database was created, false if it already exist
 <dt id="pylon.Cloudant.delete_doc">
 <code class="descname">delete_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>revid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.delete_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.delete_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Delete a document revision. Implemented via the _bulk_docs endpoint.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">delete_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</li>
+<li><strong>docid</strong> &#8211; document id</li>
+<li><strong>revid</strong> &#8211; revision id</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">delete_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
 <span class="go">        &#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
 </dd></dl>
 
@@ -232,9 +353,26 @@ and a boolean which is true if a database was created, false if it already exist
 of a single document. If <cite>data</cite> is a list of dicts, these are considered to be a document set.</p>
 <p>Note that this is implemented via the <cite>_bulk_docs</cite> endpoint, rather 
 than a <cite>POST</cite> to <cite>/{database}</cite>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;alice&#39;</span><span class="p">})</span>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</li>
+<li><strong>data</strong> &#8211; a document (represented by a dict), or a list of documents</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">single</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;alice&#39;</span><span class="p">})</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">multiple</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="p">[{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;bob&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;carl&#39;</span><span class="p">}])</span>             
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
 </dd></dl>
 
@@ -242,9 +380,21 @@ than a <cite>POST</cite> to <cite>/{database}</cite>.</p>
 <dt id="pylon.Cloudant.list_databases">
 <code class="descname">list_databases</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.list_databases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.list_databases" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of all databases under the authenticated user.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">list_databases</span><span class="p">()</span>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">list_databases</span><span class="p">()</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs">http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs</a></p>
 </dd></dl>
 
@@ -381,11 +531,32 @@ session&#8217;s settings.</td>
 <dt id="pylon.Cloudant.read_doc">
 <code class="descname">read_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.read_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.read_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch a document from the primary index by <cite>docid</cite></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">read_doc</span><span class="p">(</span><span class="s1">&#39;animaldb&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</li>
+<li><strong>docid</strong> &#8211; the id of the document.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid">http://docs.couchdb.org/en/1.6.1/api/document/common.html#get&#8211;db-docid</a></p>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylon</span> <span class="k">import</span> <span class="n">Cloudant</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span> <span class="o">=</span> <span class="n">Cloudant</span><span class="p">(</span><span class="s1">&#39;https://user.cloudant.com&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">doc</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">read_doc</span><span class="p">(</span><span class="s1">&#39;animaldb&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
 <span class="go">        rev=&#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
 </pre></div>
 </div>
-<p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid">http://docs.couchdb.org/en/1.6.1/api/document/common.html#get&#8211;db-docid</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -431,13 +602,75 @@ from requests.Session.</p>
 <p>Cloudant will return HTTP status &#8216;429: Too Many Requests&#8217; if the reserved
 throughput capacity is exceeded. This method will retry a configurable 
 number of times if this happens.</p>
+<p>This method raises a requests.HTTPError for HTTP status code &gt;= 400.</p>
 <p>See <a class="reference external" href="https://docs.cloudant.com/http.html#http-status-codes">https://docs.cloudant.com/http.html#http-status-codes</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method</strong> &#8211; method for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
+<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
+<li><strong>params</strong> &#8211; (optional) Dictionary or bytes to be sent in the query string for the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
+<li><strong>data</strong> &#8211; (optional) Dictionary, bytes, or file-like object to send in the body of the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
+<li><strong>json</strong> &#8211; (optional) json data to send in the body of the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
+<li><strong>headers</strong> &#8211; (optional) Dictionary of HTTP Headers to send with the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
+<li><strong>cookies</strong> &#8211; (optional) Dict or CookieJar object to send with the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
+<li><strong>files</strong> &#8211; (optional) Dictionary of <code class="docutils literal"><span class="pre">'name':</span> <span class="pre">file-like-objects</span></code> (or <code class="docutils literal"><span class="pre">{'name':</span> <span class="pre">file-tuple}</span></code>) for multipart encoding upload.
+<code class="docutils literal"><span class="pre">file-tuple</span></code> can be a 2-tuple <code class="docutils literal"><span class="pre">('filename',</span> <span class="pre">fileobj)</span></code>, 3-tuple <code class="docutils literal"><span class="pre">('filename',</span> <span class="pre">fileobj,</span> <span class="pre">'content_type')</span></code>
+or a 4-tuple <code class="docutils literal"><span class="pre">('filename',</span> <span class="pre">fileobj,</span> <span class="pre">'content_type',</span> <span class="pre">custom_headers)</span></code>, where <code class="docutils literal"><span class="pre">'content-type'</span></code> is a string
+defining the content type of the given file and <code class="docutils literal"><span class="pre">custom_headers</span></code> a dict-like object containing additional headers
+to add for the file.</li>
+<li><strong>auth</strong> &#8211; (optional) Auth tuple to enable Basic/Digest/Custom HTTP Auth.</li>
+<li><strong>timeout</strong> (<em>float</em><em> or </em><em>tuple</em>) &#8211; (optional) How long to wait for the server to send data
+before giving up, as a float, or a <span class="xref std std-ref">(connect timeout, read
+timeout)</span> tuple.</li>
+<li><strong>allow_redirects</strong> (<em>bool</em>) &#8211; (optional) Boolean. Enable/disable GET/OPTIONS/POST/PUT/PATCH/DELETE/HEAD redirection. Defaults to <code class="docutils literal"><span class="pre">True</span></code>.</li>
+<li><strong>proxies</strong> &#8211; (optional) Dictionary mapping protocol to the URL of the proxy.</li>
+<li><strong>verify</strong> &#8211; (optional) whether the SSL cert will be verified. A CA_BUNDLE path can also be provided. Defaults to <code class="docutils literal"><span class="pre">True</span></code>.</li>
+<li><strong>stream</strong> &#8211; (optional) if <code class="docutils literal"><span class="pre">False</span></code>, the response content will be immediately downloaded.</li>
+<li><strong>cert</strong> &#8211; (optional) if String, path to ssl client cert file (.pem). If Tuple, (&#8216;cert&#8217;, &#8216;key&#8217;) pair.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylon</span> <span class="k">import</span> <span class="n">Cloudant</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span> <span class="o">=</span> <span class="n">Cloudant</span><span class="p">(</span><span class="s1">&#39;https://user.cloudant.com&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">req</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;https://user.cloudant.com/database&#39;</span><span class="p">)</span>
+<span class="go">&lt;Response [200]&gt;</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="pylon.Cloudant.request_streamed">
 <code class="descname">request_streamed</code><span class="sig-paren">(</span><em>method</em>, <em>urlstr</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.request_streamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.request_streamed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generator HTTP request using the authenticated session object.</p>
+<dd><p>Convenience method for streaming a request. Takes the same parameters as Cloudant.request().</p>
+<p>Generator HTTP request using the authenticated session object. Not intended to be used directly.
+See convenience methods Cloudant.changes_streamed() and Cloudant.all_docs_streamed().</p>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Note: to stream the changes feed, use changes_streamed() instead.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pylon</span> <span class="k">import</span> <span class="n">Cloudant</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span> <span class="o">=</span> <span class="n">Cloudant</span><span class="p">(</span><span class="s1">&#39;https://user.cloudant.com&#39;</span><span class="p">,</span> <span class="s1">&#39;username&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ch</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">request_streamed</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;database&#39;</span><span class="p">,</span> <span class="s1">&#39;/_changes&#39;</span><span class="p">)),</span> 
+<span class="go">    params={&#39;style&#39;:&#39;all_docs&#39;, &#39;feed&#39;:&#39;continuous&#39;, &#39;timeout&#39;:0})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">changes</span> <span class="o">=</span> <span class="p">{</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span><span class="kc">True</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">ch</span> <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -476,10 +709,31 @@ a little bit of noise (between 0 and 9 1/100th of a second) between retries.</p>
 <code class="descname">update_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>revid</em>, <em>body={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.update_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.update_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update an existing document, creating a new revision.</p>
 <p>Implemented via the _bulk_docs endpoint.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">update_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</li>
+<li><strong>docid</strong> &#8211; document id</li>
+<li><strong>revid</strong> &#8211; revision id</li>
+<li><strong>body</strong> &#8211; new document body, as a dict</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">remote</span><span class="o">.</span><span class="n">update_doc</span><span class="p">(</span><span class="s1">&#39;directory&#39;</span><span class="p">,</span> <span class="s1">&#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;</span><span class="p">,</span> 
 <span class="go">        &#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;, {&#39;name&#39;:&#39;alice&#39;, &#39;phone&#39;:&#39;07865432236&#39;})</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs">http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post&#8211;db-_bulk_docs</a></p>
 </dd></dl>
 
@@ -487,14 +741,26 @@ a little bit of noise (between 0 and 9 1/100th of a second) between retries.</p>
 <dt id="pylon.Cloudant.view_query">
 <code class="descname">view_query</code><span class="sig-paren">(</span><em>database</em>, <em>ddoc</em>, <em>viewname</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.view_query"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.view_query" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query a secondary index.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>database</strong> &#8211; the name of the database we&#8217;re interested in.</li>
+<li><strong>ddoc</strong> &#8211; design document name</li>
+<li><strong>viewname</strong> &#8211; name of view function</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">dict</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="docutils">
-<dt>Example: </dt>
+<dt>Usage::</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cloudant</span><span class="o">.</span><span class="n">view_query</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="s2">&quot;my_ddoc&quot;</span><span class="p">,</span> <span class="s2">&quot;my_view&quot;</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;bob&quot;</span><span class="p">])</span>
-</pre></div>
-</div>
-</dd>
-<dt>Returns:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">{</span>
 <span class="go">  &quot;rows&quot;: [</span>
 <span class="go">    {&quot;key&quot; =&gt; &quot;alice&quot;, &quot;id&quot; =&gt; &quot;591c02fa8b8ff14dd4c0553670cc059a&quot;, &quot;value&quot; =&gt; 1},</span>
 <span class="go">    {&quot;key&quot; =&gt; &quot;bob&quot;, &quot;id&quot; =&gt; &quot;591c02fa8b8ff14dd4c0553670cc13c1&quot;, &quot;value&quot; =&gt; 1}</span>
