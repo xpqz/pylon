@@ -50,8 +50,7 @@
 <dl class="class">
 <dt id="pylon.Cloudant">
 <em class="property">class </em><code class="descclassname">pylon.</code><code class="descname">Cloudant</code><span class="sig-paren">(</span><em>url</em>, <em>username</em>, <em>password</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">requests.sessions.Session</span></code></p>
-<p>The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.</p>
+<dd><p>The Cloudant class represents an authenticated session to a remote CouchDB/Cloudant instance.</p>
 <p>It supports request retries on 429 responses from Cloudant.</p>
 <dl class="method">
 <dt id="pylon.Cloudant.all_docs">
@@ -160,12 +159,6 @@ so as to save on the HTTP overhead.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pylon.Cloudant.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Closes all adapters and as such the session</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="pylon.Cloudant.create_database">
 <code class="descname">create_database</code><span class="sig-paren">(</span><em>database</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.create_database"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.create_database" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new database on the remote end called <cite>database</cite>. Returns the response body
@@ -212,27 +205,6 @@ and a boolean which is true if a database was created, false if it already exist
 </dd>
 </dl>
 <p>See <a class="reference external" href="http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db">http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get&#8211;db</a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a DELETE request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -291,62 +263,6 @@ and a boolean which is true if a database was created, false if it already exist
 </dd></dl>
 
 <dl class="method">
-<dt id="pylon.Cloudant.get">
-<code class="descname">get</code><span class="sig-paren">(</span><em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.get" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a GET request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.get_adapter">
-<code class="descname">get_adapter</code><span class="sig-paren">(</span><em>url</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.get_adapter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the appropriate connection adapter for the given URL.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">requests.adapters.BaseAdapter</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.head">
-<code class="descname">head</code><span class="sig-paren">(</span><em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.head" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a HEAD request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="pylon.Cloudant.insert">
 <code class="descname">insert</code><span class="sig-paren">(</span><em>database</em>, <em>data={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.insert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.insert" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert one or more new documents. If <cite>data</cite> is a dict, this is considered to be the body
@@ -399,135 +315,6 @@ than a <cite>POST</cite> to <cite>/{database}</cite>.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="pylon.Cloudant.merge_environment_settings">
-<code class="descname">merge_environment_settings</code><span class="sig-paren">(</span><em>url</em>, <em>proxies</em>, <em>stream</em>, <em>verify</em>, <em>cert</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.merge_environment_settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check the environment and merge it with some settings.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.mount">
-<code class="descname">mount</code><span class="sig-paren">(</span><em>prefix</em>, <em>adapter</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.mount" title="Permalink to this definition">¶</a></dt>
-<dd><p>Registers a connection adapter to a prefix.</p>
-<p>Adapters are sorted in descending order by key length.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.options">
-<code class="descname">options</code><span class="sig-paren">(</span><em>url</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a OPTIONS request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.patch">
-<code class="descname">patch</code><span class="sig-paren">(</span><em>url</em>, <em>data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.patch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a PATCH request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>data</strong> &#8211; (optional) Dictionary, bytes, or file-like object to send in the body of the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.post">
-<code class="descname">post</code><span class="sig-paren">(</span><em>url</em>, <em>data=None</em>, <em>json=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.post" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a POST request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>data</strong> &#8211; (optional) Dictionary, bytes, or file-like object to send in the body of the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
-<li><strong>json</strong> &#8211; (optional) json to send in the body of the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.prepare_request">
-<code class="descname">prepare_request</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.prepare_request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a <code class="xref py py-class docutils literal"><span class="pre">PreparedRequest</span></code> for
-transmission and returns it. The <code class="xref py py-class docutils literal"><span class="pre">PreparedRequest</span></code> has settings
-merged from the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> instance and those of the
-<code class="xref py py-class docutils literal"><span class="pre">Session</span></code>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>request</strong> &#8211; <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> instance to prepare with this
-session&#8217;s settings.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">requests.PreparedRequest</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.put">
-<code class="descname">put</code><span class="sig-paren">(</span><em>url</em>, <em>data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.put" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sends a PUT request. Returns <code class="xref py py-class docutils literal"><span class="pre">Response</span></code> object.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>url</strong> &#8211; URL for the new <code class="xref py py-class docutils literal"><span class="pre">Request</span></code> object.</li>
-<li><strong>data</strong> &#8211; (optional) Dictionary, bytes, or file-like object to send in the body of the <code class="xref py py-class docutils literal"><span class="pre">Request</span></code>.</li>
-<li><strong>**kwargs</strong> &#8211; Optional arguments that <code class="docutils literal"><span class="pre">request</span></code> takes.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">requests.Response</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="pylon.Cloudant.read_doc">
 <code class="descname">read_doc</code><span class="sig-paren">(</span><em>database</em>, <em>docid</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.read_doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.read_doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fetch a document from the primary index by <cite>docid</cite></p>
@@ -557,41 +344,6 @@ session&#8217;s settings.</td>
 </div>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.rebuild_auth">
-<code class="descname">rebuild_auth</code><span class="sig-paren">(</span><em>prepared_request</em>, <em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.rebuild_auth" title="Permalink to this definition">¶</a></dt>
-<dd><p>When being redirected we may want to strip authentication from the
-request to avoid leaking credentials. This method intelligently removes
-and reapplies authentication where possible to avoid credential loss.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.rebuild_method">
-<code class="descname">rebuild_method</code><span class="sig-paren">(</span><em>prepared_request</em>, <em>response</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.rebuild_method" title="Permalink to this definition">¶</a></dt>
-<dd><p>When being redirected we may want to change the method of the request
-based on certain specs or browser behavior.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.rebuild_proxies">
-<code class="descname">rebuild_proxies</code><span class="sig-paren">(</span><em>prepared_request</em>, <em>proxies</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.rebuild_proxies" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method re-evaluates the proxy configuration by considering the
-environment variables. If we are redirected to a URL covered by
-NO_PROXY, we strip the proxy configuration. Otherwise, we set missing
-proxy keys for this URL (in case they were stripped by a previous
-redirect).</p>
-<p>This method also replaces the Proxy-Authorization header where
-necessary.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -674,12 +426,6 @@ See convenience methods Cloudant.changes_streamed() and Cloudant.all_docs_stream
 </dd></dl>
 
 <dl class="method">
-<dt id="pylon.Cloudant.resolve_redirects">
-<code class="descname">resolve_redirects</code><span class="sig-paren">(</span><em>resp</em>, <em>req</em>, <em>stream=False</em>, <em>timeout=None</em>, <em>verify=True</em>, <em>cert=None</em>, <em>proxies=None</em>, <em>**adapter_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.resolve_redirects" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receives a Response. Returns a generator of Responses.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="pylon.Cloudant.retry_config">
 <code class="descname">retry_config</code><span class="sig-paren">(</span><em>max_retries=5</em>, <em>base_delay=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.retry_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.retry_config" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tune the retry parameters for 429 errors.</p>
@@ -705,20 +451,6 @@ fixed amount (default 0.1s) plus a little bit of noise (between 0 and
 </div>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="pylon.Cloudant.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>request</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#pylon.Cloudant.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Send a given PreparedRequest.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">requests.Response</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
