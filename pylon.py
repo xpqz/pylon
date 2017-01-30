@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 
+__docformat__ = 'reStructuredText'
+
 """
+pylon
+~~~~~
+
 A minimal client library for Cloudant/CouchDB
 
-Author: Stefan Kruger, IBM Cloudant
+:copyright: (c) 2017 by Stefan Kruger
+:license: Apache2, see LICENSE for more details.
 """
-__docformat__ = 'reStructuredText'
 
 import requests
 import json
@@ -57,7 +62,41 @@ class Cloudant(requests.Session):
         throughput capacity is exceeded. This method will retry a configurable 
         number of times if this happens.
 
+        This method raises a requests.HTTPError for HTTP status code >= 400.
+
         See https://docs.cloudant.com/http.html#http-status-codes
+
+        :param method: method for the new :class:`Request` object.
+        :param url: URL for the new :class:`Request` object.
+        :param params: (optional) Dictionary or bytes to be sent in the query string for the :class:`Request`.
+        :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.
+        :param json: (optional) json data to send in the body of the :class:`Request`.
+        :param headers: (optional) Dictionary of HTTP Headers to send with the :class:`Request`.
+        :param cookies: (optional) Dict or CookieJar object to send with the :class:`Request`.
+        :param files: (optional) Dictionary of ``'name': file-like-objects`` (or ``{'name': file-tuple}``) for multipart encoding upload.
+            ``file-tuple`` can be a 2-tuple ``('filename', fileobj)``, 3-tuple ``('filename', fileobj, 'content_type')``
+            or a 4-tuple ``('filename', fileobj, 'content_type', custom_headers)``, where ``'content-type'`` is a string
+            defining the content type of the given file and ``custom_headers`` a dict-like object containing additional headers
+            to add for the file.
+        :param auth: (optional) Auth tuple to enable Basic/Digest/Custom HTTP Auth.
+        :param timeout: (optional) How long to wait for the server to send data
+            before giving up, as a float, or a :ref:`(connect timeout, read
+            timeout) <timeouts>` tuple.
+        :type timeout: float or tuple
+        :param allow_redirects: (optional) Boolean. Enable/disable GET/OPTIONS/POST/PUT/PATCH/DELETE/HEAD redirection. Defaults to ``True``.
+        :type allow_redirects: bool
+        :param proxies: (optional) Dictionary mapping protocol to the URL of the proxy.
+        :param verify: (optional) whether the SSL cert will be verified. A CA_BUNDLE path can also be provided. Defaults to ``True``.
+        :param stream: (optional) if ``False``, the response content will be immediately downloaded.
+        :param cert: (optional) if String, path to ssl client cert file (.pem). If Tuple, ('cert', 'key') pair.
+        :return: :class:`Response <Response>` object
+        :rtype: requests.Response
+
+        Usage::
+            >>> from pylon import Cloudant
+            >>> remote = Cloudant('https://user.cloudant.com', 'username', 'password')
+            >>> req = remote.request('GET', 'https://user.cloudant.com/database')
+            <Response [200]>
         """
         r = None
         delay = self.base_delay
@@ -80,7 +119,18 @@ class Cloudant(requests.Session):
 
     def request_streamed(self, method, urlstr, **kwargs):
         """
-        Generator HTTP request using the authenticated session object. 
+        Convenience method for streaming a request. Takes the same parameters as Cloudant.request().
+
+        Generator HTTP request using the authenticated session object. Not intended to be used directly.
+        See convenience methods Cloudant.changes_streamed() and Cloudant.all_docs_streamed().
+
+        Usage::
+            >>> # Note: to stream the changes feed, use changes_streamed() instead.
+            >>> from pylon import Cloudant
+            >>> remote = Cloudant('https://user.cloudant.com', 'username', 'password')
+            >>> ch = remote.request_streamed('GET', endpoint(self.url, path('database', '/_changes')), 
+                params={'style':'all_docs', 'feed':'continuous', 'timeout':0})
+            >>> changes = {doc['id']:True for doc in ch if 'id' in doc}
         """
         def parse_line(regex, line):
             decoded_line = line.rstrip().decode('utf-8')
@@ -107,16 +157,33 @@ class Cloudant(requests.Session):
                         yield parsed
 
     def changes_streamed(self, database):
+        """
+        Convenience method for streaming a changes feed. Generator of dict.
+
+        :param database: the name of the database we're interested in.
+
+        Usage::
+            >>> from pylon import Cloudant
+            >>> remote = Cloudant('https://user.cloudant.com', 'username', 'password')
+            >>> changes = {doc['id']:True for doc in remote.changes_streamed('database') if 'id' in doc}
+        """
         return self.request_streamed('GET', endpoint(self.url, path(database, '/_changes')), params={'style':'all_docs', 'feed':'continuous', 'timeout':0})
 
     def read_doc(self, database, docid, **kwargs):
         """
         Fetch a document from the primary index by `docid` 
 
-            >>> doc = remote.read_doc('animaldb', '7a36cbc16e43e362e1ae68861aa06c0f', 
-                    rev='1-5a05c08a7a601c49c8bc344d77e23020')
+        :param database: the name of the database we're interested in.
+        :param docid: the id of the document.
+        :rtype: dict
 
         See http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid
+
+        Usage::
+            >>> from pylon import Cloudant
+            >>> remote = Cloudant('https://user.cloudant.com', 'username', 'password')
+            >>> doc = remote.read_doc('animaldb', '7a36cbc16e43e362e1ae68861aa06c0f', 
+                    rev='1-5a05c08a7a601c49c8bc344d77e23020')
         """
         return self.get(endpoint(self.url, path(database, '/'+docid)), params=kwargs).json()
 
@@ -127,6 +194,10 @@ class Cloudant(requests.Session):
         This is a function primarily intended for internal use, but can
         be used directly to create, update or delete documents in bulk,
         so as to save on the HTTP overhead.
+
+        :param database: the name of the database we're interested in.
+        :param data: the list of documents to send
+        :rtype: list
 
         Note that many other methods are implemented in terms of `bulk_docs`.
 
@@ -144,7 +215,12 @@ class Cloudant(requests.Session):
         Note that this is implemented via the `_bulk_docs` endpoint, rather 
         than a `POST` to `/{database}`.
 
-            >>> result = remote.insert('directory', {'name':'alice'})
+        :param database: the name of the database we're interested in.
+        :param data: a document (represented by a dict), or a list of documents
+
+        Usage::
+            >>> single = remote.insert('directory', {'name':'alice'}) 
+            >>> multiple = remote.insert('directory', [{'name':'bob'}, {'name':'carl'}])             
 
         See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs
         """
@@ -160,6 +236,13 @@ class Cloudant(requests.Session):
 
         Implemented via the _bulk_docs endpoint.
 
+        :param database: the name of the database we're interested in.
+        :param docid: document id
+        :param revid: revision id
+        :param body: new document body, as a dict
+        :rtype: dict
+
+        Usage::
             >>> result = remote.update_doc('directory', '7a36cbc16e43e362e1ae68861aa06c0f', 
                     '1-5a05c08a7a601c49c8bc344d77e23020', {'name':'alice', 'phone':'07865432236'})
 
@@ -172,6 +255,12 @@ class Cloudant(requests.Session):
         """
         Delete a document revision. Implemented via the _bulk_docs endpoint.
 
+        :param database: the name of the database we're interested in.
+        :param docid: document id
+        :param revid: revision id
+        :rtype: dict
+
+        Usage::
             >>> result = remote.delete_doc('directory', '7a36cbc16e43e362e1ae68861aa06c0f', 
                     '1-5a05c08a7a601c49c8bc344d77e23020')
 
@@ -183,10 +272,13 @@ class Cloudant(requests.Session):
         """
         Query a secondary index.
 
-        Example: 
-            >>> cloudant.view_query(db, "my_ddoc", "my_view", keys=["alice", "bob"])
+        :param database: the name of the database we're interested in.
+        :param ddoc: design document name
+        :param viewname: name of view function
+        :rtype: dict
 
-        Returns:
+        Usage::
+            >>> cloudant.view_query(db, "my_ddoc", "my_view", keys=["alice", "bob"])
             >>> {
               "rows": [
                 {"key" => "alice", "id" => "591c02fa8b8ff14dd4c0553670cc059a", "value" => 1},
@@ -212,6 +304,10 @@ class Cloudant(requests.Session):
         """
         Query the primary index.
 
+        :param database: the name of the database we're interested in.
+        :rtype: dict
+
+        Usage::
             >>> docs = remote.all_docs('directory', keys=[
                     '7a36cbc16e43e362e1ae68861aa06c0f',
                     '7a36cbc16e43e362e1ae68861aa06da1'])
@@ -234,8 +330,12 @@ class Cloudant(requests.Session):
 
     def all_docs_streamed(self, database, **kwargs):
         """
-        Query the primary index, streaming the results
+        Query the primary index, streaming the results. Generator of dicts.
 
+        :param database: the name of the database we're interested in.
+        :rtype: generator 
+
+        Usage::
             >>> for doc in remote.all_docs_streamed('directory', keys=[
                     '7a36cbc16e43e362e1ae68861aa06c0f',
                     '7a36cbc16e43e362e1ae68861aa06da1'
@@ -260,6 +360,10 @@ class Cloudant(requests.Session):
         Create a new database on the remote end called `database`. Returns the response body
         and a boolean which is true if a database was created, false if it already existed.
 
+        :param database: the name of the database we're interested in.
+        :rtype: tuple
+
+        Usage::
             >>> (result, created) = remote.create_database('directory')
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db
@@ -278,6 +382,9 @@ class Cloudant(requests.Session):
         """
         Return a list of all databases under the authenticated user.
 
+        :rtype: list
+
+        Usage::
             >>> result = remote.list_databases()
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs
@@ -286,8 +393,12 @@ class Cloudant(requests.Session):
 
     def delete_database(self, database):
         """
-        Delete `database`.
+        Delete a database.
 
+        :param database: the name of the database we're deleting.
+        :rtype: dict
+
+        Usage::
             >>> result = remote.delete_database('directory')
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db
@@ -296,8 +407,12 @@ class Cloudant(requests.Session):
 
     def database_info(self, database):
         """
-        Return the metadata about `database`.
+        Return the metadata about a database.
 
+        :param database: the name of the database we're interested in.
+        :rtype: dict
+
+        Usage::
             >>> result = remote.database_info('directory')
 
         See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db
