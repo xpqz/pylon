@@ -682,12 +682,29 @@ See convenience methods Cloudant.changes_streamed() and Cloudant.all_docs_stream
 <dl class="method">
 <dt id="pylon.Cloudant.retry_config">
 <code class="descname">retry_config</code><span class="sig-paren">(</span><em>max_retries=5</em>, <em>base_delay=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/pylon.html#Cloudant.retry_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pylon.Cloudant.retry_config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tune the retry parameters for 429 errors. The default is 5 retries with an
-accumulative delay. Each iteration adds a fixed amount (default 0.1s) plus 
-a little bit of noise (between 0 and 9 1/100th of a second) between retries.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span><span class="o">.</span><span class="n">retry_config</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+<dd><p>Tune the retry parameters for 429 errors.</p>
+<p>The default is 5 retries with an accumulative delay. Each iteration adds a 
+fixed amount (default 0.1s) plus a little bit of noise (between 0 and 
+9 1/100th of a second) between retries.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>max_retries</strong> &#8211; integer - max attempts when receiving a 429</li>
+<li><strong>base_delay</strong> &#8211; float (seconds) to add to the delay between attempts</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Usage::</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">remote</span><span class="o">.</span><span class="n">retry_config</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
