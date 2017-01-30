@@ -45,12 +45,17 @@
   <h1>Source code for pylon</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 
+<span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;reStructuredText&#39;</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">pylon</span>
+<span class="sd">~~~~~</span>
+
 <span class="sd">A minimal client library for Cloudant/CouchDB</span>
 
-<span class="sd">Author: Stefan Kruger, IBM Cloudant</span>
+<span class="sd">:copyright: (c) 2017 by Stefan Kruger</span>
+<span class="sd">:license: Apache2, see LICENSE for more details.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="n">__docformat__</span> <span class="o">=</span> <span class="s1">&#39;reStructuredText&#39;</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -102,7 +107,41 @@
 <span class="sd">        throughput capacity is exceeded. This method will retry a configurable </span>
 <span class="sd">        number of times if this happens.</span>
 
+<span class="sd">        This method raises a requests.HTTPError for HTTP status code &gt;= 400.</span>
+
 <span class="sd">        See https://docs.cloudant.com/http.html#http-status-codes</span>
+
+<span class="sd">        :param method: method for the new :class:`Request` object.</span>
+<span class="sd">        :param url: URL for the new :class:`Request` object.</span>
+<span class="sd">        :param params: (optional) Dictionary or bytes to be sent in the query string for the :class:`Request`.</span>
+<span class="sd">        :param data: (optional) Dictionary, bytes, or file-like object to send in the body of the :class:`Request`.</span>
+<span class="sd">        :param json: (optional) json data to send in the body of the :class:`Request`.</span>
+<span class="sd">        :param headers: (optional) Dictionary of HTTP Headers to send with the :class:`Request`.</span>
+<span class="sd">        :param cookies: (optional) Dict or CookieJar object to send with the :class:`Request`.</span>
+<span class="sd">        :param files: (optional) Dictionary of ``&#39;name&#39;: file-like-objects`` (or ``{&#39;name&#39;: file-tuple}``) for multipart encoding upload.</span>
+<span class="sd">            ``file-tuple`` can be a 2-tuple ``(&#39;filename&#39;, fileobj)``, 3-tuple ``(&#39;filename&#39;, fileobj, &#39;content_type&#39;)``</span>
+<span class="sd">            or a 4-tuple ``(&#39;filename&#39;, fileobj, &#39;content_type&#39;, custom_headers)``, where ``&#39;content-type&#39;`` is a string</span>
+<span class="sd">            defining the content type of the given file and ``custom_headers`` a dict-like object containing additional headers</span>
+<span class="sd">            to add for the file.</span>
+<span class="sd">        :param auth: (optional) Auth tuple to enable Basic/Digest/Custom HTTP Auth.</span>
+<span class="sd">        :param timeout: (optional) How long to wait for the server to send data</span>
+<span class="sd">            before giving up, as a float, or a :ref:`(connect timeout, read</span>
+<span class="sd">            timeout) &lt;timeouts&gt;` tuple.</span>
+<span class="sd">        :type timeout: float or tuple</span>
+<span class="sd">        :param allow_redirects: (optional) Boolean. Enable/disable GET/OPTIONS/POST/PUT/PATCH/DELETE/HEAD redirection. Defaults to ``True``.</span>
+<span class="sd">        :type allow_redirects: bool</span>
+<span class="sd">        :param proxies: (optional) Dictionary mapping protocol to the URL of the proxy.</span>
+<span class="sd">        :param verify: (optional) whether the SSL cert will be verified. A CA_BUNDLE path can also be provided. Defaults to ``True``.</span>
+<span class="sd">        :param stream: (optional) if ``False``, the response content will be immediately downloaded.</span>
+<span class="sd">        :param cert: (optional) if String, path to ssl client cert file (.pem). If Tuple, (&#39;cert&#39;, &#39;key&#39;) pair.</span>
+<span class="sd">        :return: :class:`Response &lt;Response&gt;` object</span>
+<span class="sd">        :rtype: requests.Response</span>
+
+<span class="sd">        Usage::</span>
+<span class="sd">            &gt;&gt;&gt; from pylon import Cloudant</span>
+<span class="sd">            &gt;&gt;&gt; remote = Cloudant(&#39;https://user.cloudant.com&#39;, &#39;username&#39;, &#39;password&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; req = remote.request(&#39;GET&#39;, &#39;https://user.cloudant.com/database&#39;)</span>
+<span class="sd">            &lt;Response [200]&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span>
@@ -125,7 +164,18 @@
 
 <div class="viewcode-block" id="Cloudant.request_streamed"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.request_streamed">[docs]</a>    <span class="k">def</span> <span class="nf">request_streamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">urlstr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generator HTTP request using the authenticated session object. </span>
+<span class="sd">        Convenience method for streaming a request. Takes the same parameters as Cloudant.request().</span>
+
+<span class="sd">        Generator HTTP request using the authenticated session object. Not intended to be used directly.</span>
+<span class="sd">        See convenience methods Cloudant.changes_streamed() and Cloudant.all_docs_streamed().</span>
+
+<span class="sd">        Usage::</span>
+<span class="sd">            &gt;&gt;&gt; # Note: to stream the changes feed, use changes_streamed() instead.</span>
+<span class="sd">            &gt;&gt;&gt; from pylon import Cloudant</span>
+<span class="sd">            &gt;&gt;&gt; remote = Cloudant(&#39;https://user.cloudant.com&#39;, &#39;username&#39;, &#39;password&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; ch = remote.request_streamed(&#39;GET&#39;, endpoint(self.url, path(&#39;database&#39;, &#39;/_changes&#39;)), </span>
+<span class="sd">                params={&#39;style&#39;:&#39;all_docs&#39;, &#39;feed&#39;:&#39;continuous&#39;, &#39;timeout&#39;:0})</span>
+<span class="sd">            &gt;&gt;&gt; changes = {doc[&#39;id&#39;]:True for doc in ch if &#39;id&#39; in doc}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">def</span> <span class="nf">parse_line</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
             <span class="n">decoded_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
@@ -152,16 +202,33 @@
                         <span class="k">yield</span> <span class="n">parsed</span></div>
 
 <div class="viewcode-block" id="Cloudant.changes_streamed"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.changes_streamed">[docs]</a>    <span class="k">def</span> <span class="nf">changes_streamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience method for streaming a changes feed. Generator of dict.</span>
+
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+
+<span class="sd">        Usage::</span>
+<span class="sd">            &gt;&gt;&gt; from pylon import Cloudant</span>
+<span class="sd">            &gt;&gt;&gt; remote = Cloudant(&#39;https://user.cloudant.com&#39;, &#39;username&#39;, &#39;password&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; changes = {doc[&#39;id&#39;]:True for doc in remote.changes_streamed(&#39;database&#39;) if &#39;id&#39; in doc}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request_streamed</span><span class="p">(</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s1">&#39;/_changes&#39;</span><span class="p">)),</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;style&#39;</span><span class="p">:</span><span class="s1">&#39;all_docs&#39;</span><span class="p">,</span> <span class="s1">&#39;feed&#39;</span><span class="p">:</span><span class="s1">&#39;continuous&#39;</span><span class="p">,</span> <span class="s1">&#39;timeout&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">})</span></div>
 
 <div class="viewcode-block" id="Cloudant.read_doc"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.read_doc">[docs]</a>    <span class="k">def</span> <span class="nf">read_doc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="n">docid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch a document from the primary index by `docid` </span>
 
-<span class="sd">            &gt;&gt;&gt; doc = remote.read_doc(&#39;animaldb&#39;, &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;, </span>
-<span class="sd">                    rev=&#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :param docid: the id of the document.</span>
+<span class="sd">        :rtype: dict</span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/api/document/common.html#get--db-docid</span>
+
+<span class="sd">        Usage::</span>
+<span class="sd">            &gt;&gt;&gt; from pylon import Cloudant</span>
+<span class="sd">            &gt;&gt;&gt; remote = Cloudant(&#39;https://user.cloudant.com&#39;, &#39;username&#39;, &#39;password&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; doc = remote.read_doc(&#39;animaldb&#39;, &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;, </span>
+<span class="sd">                    rev=&#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">(</span><span class="n">database</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="o">+</span><span class="n">docid</span><span class="p">)),</span> <span class="n">params</span><span class="o">=</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span></div>
 
@@ -172,6 +239,10 @@
 <span class="sd">        This is a function primarily intended for internal use, but can</span>
 <span class="sd">        be used directly to create, update or delete documents in bulk,</span>
 <span class="sd">        so as to save on the HTTP overhead.</span>
+
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :param data: the list of documents to send</span>
+<span class="sd">        :rtype: list</span>
 
 <span class="sd">        Note that many other methods are implemented in terms of `bulk_docs`.</span>
 
@@ -189,7 +260,12 @@
 <span class="sd">        Note that this is implemented via the `_bulk_docs` endpoint, rather </span>
 <span class="sd">        than a `POST` to `/{database}`.</span>
 
-<span class="sd">            &gt;&gt;&gt; result = remote.insert(&#39;directory&#39;, {&#39;name&#39;:&#39;alice&#39;})</span>
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :param data: a document (represented by a dict), or a list of documents</span>
+
+<span class="sd">        Usage::</span>
+<span class="sd">            &gt;&gt;&gt; single = remote.insert(&#39;directory&#39;, {&#39;name&#39;:&#39;alice&#39;}) </span>
+<span class="sd">            &gt;&gt;&gt; multiple = remote.insert(&#39;directory&#39;, [{&#39;name&#39;:&#39;bob&#39;}, {&#39;name&#39;:&#39;carl&#39;}])             </span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/api/database/bulk-api.html#post--db-_bulk_docs</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -205,6 +281,13 @@
 
 <span class="sd">        Implemented via the _bulk_docs endpoint.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :param docid: document id</span>
+<span class="sd">        :param revid: revision id</span>
+<span class="sd">        :param body: new document body, as a dict</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; result = remote.update_doc(&#39;directory&#39;, &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;, </span>
 <span class="sd">                    &#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;, {&#39;name&#39;:&#39;alice&#39;, &#39;phone&#39;:&#39;07865432236&#39;})</span>
 
@@ -217,6 +300,12 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete a document revision. Implemented via the _bulk_docs endpoint.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :param docid: document id</span>
+<span class="sd">        :param revid: revision id</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; result = remote.delete_doc(&#39;directory&#39;, &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;, </span>
 <span class="sd">                    &#39;1-5a05c08a7a601c49c8bc344d77e23020&#39;)</span>
 
@@ -228,10 +317,13 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Query a secondary index.</span>
 
-<span class="sd">        Example: </span>
-<span class="sd">            &gt;&gt;&gt; cloudant.view_query(db, &quot;my_ddoc&quot;, &quot;my_view&quot;, keys=[&quot;alice&quot;, &quot;bob&quot;])</span>
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :param ddoc: design document name</span>
+<span class="sd">        :param viewname: name of view function</span>
+<span class="sd">        :rtype: dict</span>
 
-<span class="sd">        Returns:</span>
+<span class="sd">        Usage::</span>
+<span class="sd">            &gt;&gt;&gt; cloudant.view_query(db, &quot;my_ddoc&quot;, &quot;my_view&quot;, keys=[&quot;alice&quot;, &quot;bob&quot;])</span>
 <span class="sd">            &gt;&gt;&gt; {</span>
 <span class="sd">              &quot;rows&quot;: [</span>
 <span class="sd">                {&quot;key&quot; =&gt; &quot;alice&quot;, &quot;id&quot; =&gt; &quot;591c02fa8b8ff14dd4c0553670cc059a&quot;, &quot;value&quot; =&gt; 1},</span>
@@ -257,6 +349,10 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Query the primary index.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; docs = remote.all_docs(&#39;directory&#39;, keys=[</span>
 <span class="sd">                    &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
 <span class="sd">                    &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;])</span>
@@ -279,8 +375,12 @@
 
 <div class="viewcode-block" id="Cloudant.all_docs_streamed"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.all_docs_streamed">[docs]</a>    <span class="k">def</span> <span class="nf">all_docs_streamed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Query the primary index, streaming the results</span>
+<span class="sd">        Query the primary index, streaming the results. Generator of dicts.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :rtype: generator </span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; for doc in remote.all_docs_streamed(&#39;directory&#39;, keys=[</span>
 <span class="sd">                    &#39;7a36cbc16e43e362e1ae68861aa06c0f&#39;,</span>
 <span class="sd">                    &#39;7a36cbc16e43e362e1ae68861aa06da1&#39;</span>
@@ -305,6 +405,10 @@
 <span class="sd">        Create a new database on the remote end called `database`. Returns the response body</span>
 <span class="sd">        and a boolean which is true if a database was created, false if it already existed.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :rtype: tuple</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; (result, created) = remote.create_database(&#39;directory&#39;)</span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#put--db</span>
@@ -323,6 +427,9 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a list of all databases under the authenticated user.</span>
 
+<span class="sd">        :rtype: list</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; result = remote.list_databases()</span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/server/common.html#all-dbs</span>
@@ -331,8 +438,12 @@
 
 <div class="viewcode-block" id="Cloudant.delete_database"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.delete_database">[docs]</a>    <span class="k">def</span> <span class="nf">delete_database</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Delete `database`.</span>
+<span class="sd">        Delete a database.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re deleting.</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; result = remote.delete_database(&#39;directory&#39;)</span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#delete--db</span>
@@ -341,8 +452,12 @@
 
 <div class="viewcode-block" id="Cloudant.database_info"><a class="viewcode-back" href="../pylon.html#pylon.Cloudant.database_info">[docs]</a>    <span class="k">def</span> <span class="nf">database_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">database</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return the metadata about `database`.</span>
+<span class="sd">        Return the metadata about a database.</span>
 
+<span class="sd">        :param database: the name of the database we&#39;re interested in.</span>
+<span class="sd">        :rtype: dict</span>
+
+<span class="sd">        Usage::</span>
 <span class="sd">            &gt;&gt;&gt; result = remote.database_info(&#39;directory&#39;)</span>
 
 <span class="sd">        See http://docs.couchdb.org/en/1.6.1/CouchDB/database/common.html#get--db</span>
