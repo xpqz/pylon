@@ -44,10 +44,16 @@ class Cloudant(requests.Session):
 
     def retry_config(self, max_retries=5, base_delay=0.1):
         """
-        Tune the retry parameters for 429 errors. The default is 5 retries with an
-        accumulative delay. Each iteration adds a fixed amount (default 0.1s) plus 
-        a little bit of noise (between 0 and 9 1/100th of a second) between retries.
+        Tune the retry parameters for 429 errors. 
 
+        The default is 5 retries with an accumulative delay. Each iteration adds a 
+        fixed amount (default 0.1s) plus a little bit of noise (between 0 and 
+        9 1/100th of a second) between retries.
+
+        :param max_retries: integer - max attempts when receiving a 429
+        :param base_delay: float (seconds) to add to the delay between attempts
+
+        Usage::
             >>> remote.retry_config(10, 0.5)
         """
         self.max_retries = max_retries
